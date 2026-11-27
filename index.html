@@ -1,0 +1,1820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Miss Sunny English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: left sidebar (brand, 4 tabs, settings) + right content pages.
+   Talk page = scene picker, 3 steps (Learn / Practice / Review), chalkboard chat + help panel. */
+:root {
+  --bg: #f6f4ee;
+  --paper: #ffffff;
+  --soft: #efece3;
+  --ink: #1f2a2e;
+  --muted: #5d686c;
+  --line: #e2ded2;
+  --board: #23423a;
+  --board-2: #2c5047;
+  --board-ink: #eef3ef;
+  --board-muted: #b9cbc3;
+  --chalk: #f5d76e;
+  --sunny: #f2a93b;
+  --sunny-ink: #3a2506;
+  --kid: #dbe9fa;
+  --kid-ink: #13233a;
+  --kid-av: #4f8fd6;
+  --fix: #2f8f5b;
+  --fix-bg: #e3f3ea;
+  --warn: #c0573f;
+  --display: "Fredoka", "Nunito", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --body: "Nunito", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141a19; --paper: #1d2523; --soft: #232c2a; --ink: #e8eeec; --muted: #a2b0ac; --line: #2e3a37;
+    --board: #1b332c; --board-2: #244238; --board-ink: #e7efe9; --board-muted: #9fb6ac; --chalk: #f0cf5f; --sunny: #f0ae48;
+    --kid: #2a3d57; --kid-ink: #e3eefc; --kid-av: #78aef0; --fix: #5cc48a; --fix-bg: #1d3a2b; --warn: #e88a72;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141a19; --paper: #1d2523; --soft: #232c2a; --ink: #e8eeec; --muted: #a2b0ac; --line: #2e3a37;
+  --board: #1b332c; --board-2: #244238; --board-ink: #e7efe9; --board-muted: #9fb6ac; --chalk: #f0cf5f; --sunny: #f0ae48;
+  --kid: #2a3d57; --kid-ink: #e3eefc; --kid-av: #78aef0; --fix: #5cc48a; --fix-bg: #1d3a2b; --warn: #e88a72;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+button { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--sunny); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; line-height: 1.15; margin: 0; }
+.no-zh .zh { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- shell ---------- */
+.shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; background: linear-gradient(to right, var(--board) 248px, transparent 248px); }
+.side {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--board); color: var(--board-ink);
+  padding: 22px 16px 18px max(16px, env(safe-area-inset-left, 0px));
+  display: flex; flex-direction: column; gap: 22px;
+}
+.brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; color: var(--board-ink); }
+.brand svg { width: 46px; height: 46px; flex: none; }
+.brand b { display: block; font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.1; }
+.brand small { display: block; font-size: 12px; color: var(--board-muted); }
+.nav { display: grid; gap: 4px; }
+.nav button {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  background: transparent; border: 0; border-radius: 12px; padding: 10px 12px; cursor: pointer; color: var(--board-ink);
+}
+.nav button:hover { background: var(--board-2); }
+.nav button[aria-current="page"] { background: var(--chalk); color: #23302b; }
+.nav svg { width: 22px; height: 22px; flex: none; }
+.nav span b { display: block; font-weight: 800; font-size: 15px; line-height: 1.2; }
+.nav span small { display: block; font-size: 12px; opacity: .75; }
+.settings { margin-top: auto; display: grid; gap: 10px; font-size: 13px; }
+.settings h3 { font-family: var(--body); font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--board-muted); }
+.toggle { display: flex; gap: 4px; background: var(--board-2); border-radius: 10px; padding: 3px; }
+.toggle button { flex: 1; border: 0; background: transparent; color: var(--board-ink); border-radius: 8px; padding: 5px 6px; cursor: pointer; font-size: 13px; font-weight: 700; }
+.toggle button[aria-pressed="true"] { background: var(--board-ink); color: var(--board); }
+.side .demo { font-size: 12px; color: var(--board-muted); margin: 0; }
+
+.main { min-width: 0; padding: 30px max(16px, env(safe-area-inset-right, 0px)) 48px 32px; }
+.page { max-width: 1040px; margin: 0 auto; }
+.page[hidden] { display: none; }
+.page-head { margin-bottom: 20px; }
+.page-head h1 { font-size: 30px; }
+.page-head p { margin: 6px 0 0; color: var(--muted); }
+.eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--sunny); margin: 0 0 4px; }
+
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.btn { border: 0; border-radius: 12px; padding: 9px 18px; font-weight: 800; cursor: pointer; background: var(--sunny); color: var(--sunny-ink); }
+.btn.ghost { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
+.btn.small { padding: 5px 12px; font-size: 13px; border-radius: 10px; }
+.btn:disabled { opacity: .45; cursor: default; }
+.chip { border: 1.5px solid var(--line); background: var(--paper); border-radius: 999px; padding: 5px 13px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--board); border-color: var(--board); color: var(--board-ink); }
+.stars { color: var(--sunny); letter-spacing: 1px; font-size: 15px; }
+.stars .off { color: var(--line); }
+
+/* ---------- home ---------- */
+.hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: center; background: var(--board); color: var(--board-ink); border-radius: 22px; padding: 26px; }
+.hero svg { width: 110px; height: 110px; }
+.hero h1 { font-size: 34px; }
+.hero p { margin: 8px 0 14px; color: var(--board-muted); max-width: 560px; }
+.hero .row { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero .btn.ghost { border-color: rgba(255,255,255,.35); color: var(--board-ink); }
+.steps3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 18px 0 26px; }
+.steps3 .card { display: grid; gap: 4px; }
+.steps3 .num { width: 30px; height: 30px; border-radius: 50%; background: var(--chalk); color: #23302b; display: grid; place-items: center; font-family: var(--display); font-weight: 600; }
+.steps3 h3 { font-size: 18px; margin-top: 6px; }
+.steps3 p { margin: 0; color: var(--muted); font-size: 14px; }
+.sec-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 0 0 12px; }
+.sec-title h2 { font-size: 22px; }
+.sec-title span { color: var(--muted); font-size: 14px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 12px; }
+.tile { text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 14px; cursor: pointer; display: grid; gap: 2px; }
+.tile:hover { border-color: var(--sunny); }
+.tile .emo { font-size: 30px; line-height: 1.2; }
+.tile b { font-size: 16px; }
+.tile small { color: var(--muted); font-size: 13px; }
+.home-bottom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 26px; }
+.wod { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; }
+.wod .emo { font-size: 54px; }
+.wod b { font-family: var(--display); font-size: 28px; font-weight: 600; }
+.wod p { margin: 2px 0 8px; color: var(--muted); }
+.mini-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; text-align: center; }
+.mini-stats b { display: block; font-family: var(--display); font-size: 30px; font-weight: 600; color: var(--board); }
+:root[data-theme="dark"] .mini-stats b { color: var(--chalk); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mini-stats b { color: var(--chalk); } }
+.mini-stats small { color: var(--muted); font-size: 13px; }
+
+/* ---------- talk ---------- */
+.scene-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.scene-head { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; justify-content: space-between; margin-bottom: 14px; }
+.scene-head .t { display: flex; align-items: center; gap: 12px; }
+.scene-head .emo { font-size: 38px; }
+.scene-head h2 { font-size: 24px; }
+.scene-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.tabs[hidden] { display: none; }
+.tabs { display: flex; gap: 4px; background: var(--soft); border-radius: 12px; padding: 4px; }
+.tabs button { border: 0; background: transparent; border-radius: 9px; padding: 7px 14px; font-weight: 800; font-size: 14px; cursor: pointer; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--paper); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+.phrases { display: grid; gap: 10px; }
+.phrase { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.phrase .en { font-weight: 800; font-size: 17px; }
+.phrase .zh { color: var(--muted); font-size: 14px; }
+.phrase .acts { display: flex; gap: 6px; }
+.phrase .res { grid-column: 1 / -1; font-size: 13px; font-weight: 700; color: var(--fix); }
+.phrase .res.try { color: var(--warn); }
+.phrase .res:empty { display: none; }
+.learn-foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-top: 16px; }
+.learn-foot p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.practice { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 14px; align-items: start; }
+.board { background: var(--board); color: var(--board-ink); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: inset 0 0 0 6px rgba(0,0,0,.12); height: 540px; }
+.chat { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-content: start; padding-right: 4px; }
+.msg { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: start; }
+.msg.kid { grid-template-columns: minmax(0, 1fr) 38px; }
+.av { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 600; font-size: 14px; }
+.sunny .av { background: var(--sunny); color: var(--sunny-ink); }
+.kid .av { background: var(--kid-av); color: #08213d; grid-column: 2; grid-row: 1; }
+.bubble { background: var(--paper); color: var(--ink); border-radius: 14px; padding: 9px 13px; justify-self: start; max-width: 560px; }
+.kid .bubble { justify-self: end; background: var(--kid); color: var(--kid-ink); grid-column: 1; grid-row: 1; }
+.bubble p { margin: 0; }
+.bubble .zh { font-size: 13px; color: var(--muted); }
+.bubble .praise { font-weight: 800; color: var(--fix); }
+.bubble .spell { margin-top: 6px; font-size: 13px; font-weight: 800; color: var(--kid-ink); background: rgba(79,143,214,.18); border-radius: 8px; padding: 3px 8px; }
+.quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.quick[hidden] { display: none; }
+.quick button { border: 1.5px dashed rgba(255,255,255,.5); background: transparent; color: var(--board-ink); border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.quick button:hover { background: rgba(255,255,255,.1); }
+.mem { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.mem li { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; border-bottom: 1px dashed var(--line); padding: 3px 0; }
+.mem li small { color: var(--muted); }
+.mem li.empty { display: block; border: 0; }
+.bubble .fix { margin-top: 6px; font-size: 13px; color: var(--fix); font-weight: 800; background: var(--fix-bg); border-radius: 8px; padding: 3px 8px; }
+.say { font-size: 12px; font-weight: 800; margin-top: 6px; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 1px 10px; cursor: pointer; }
+.ask { display: flex; gap: 8px; }
+.ask input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 10px 14px; border-radius: 12px; border: 0; background: var(--paper); color: var(--ink); }
+.ask button { border: 0; border-radius: 12px; padding: 8px 18px; font-weight: 800; cursor: pointer; background: var(--chalk); color: #23302b; }
+.ask .mic { flex: none; width: 46px; padding: 0; display: grid; place-items: center; background: var(--paper); color: var(--board); }
+.ask .mic svg, .micbtn svg { width: 20px; height: 20px; }
+.mic.on, .micbtn.on { background: #e05a47 !important; color: #fff !important; }
+.status { margin: -4px 0 0; font-size: 13px; color: var(--chalk); }
+.status:empty { display: none; }
+@media (prefers-reduced-motion: no-preference) { .mic.on, .micbtn.on { animation: pulse 1.2s ease-in-out infinite; } @keyframes pulse { 50% { transform: scale(1.08); } } .msg { animation: pop .22s ease both; } @keyframes pop { from { transform: translateY(6px); } to { transform: none; } } }
+.micbtn { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); cursor: pointer; color: var(--board); }
+.iconbtn { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); cursor: pointer; font-size: 14px; }
+
+.help { display: grid; gap: 12px; }
+.help .card { padding: 14px; }
+.help h3 { font-size: 16px; margin-bottom: 8px; }
+.dots { display: flex; gap: 6px; margin-bottom: 4px; }
+.dots i { width: 100%; height: 8px; border-radius: 4px; background: var(--line); }
+.dots i.done { background: var(--fix); }
+.dots i.now { background: var(--sunny); }
+.help .meta { font-size: 13px; color: var(--muted); margin: 0; }
+.supports { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.supports button { border: 1.5px solid var(--line); background: var(--paper); border-radius: 10px; padding: 7px 8px; cursor: pointer; text-align: left; font-size: 13px; font-weight: 800; line-height: 1.25; }
+.supports button small { display: block; font-weight: 600; color: var(--muted); }
+.supports button:hover { border-color: var(--sunny); }
+.useful { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.useful button { width: 100%; text-align: left; border: 0; background: var(--soft); border-radius: 9px; padding: 6px 10px; cursor: pointer; font-size: 14px; }
+.useful button small { display: block; color: var(--muted); font-size: 12px; }
+
+.review { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.review .big { text-align: center; display: grid; gap: 6px; justify-items: center; }
+.review .big .stars { font-size: 40px; }
+.review ul { margin: 0; padding-left: 20px; }
+.review li { margin-bottom: 4px; }
+.review .row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 6px; }
+.empty { color: var(--muted); font-size: 14px; }
+
+/* ---------- words ---------- */
+.words { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.flash { perspective: 1000px; height: 300px; cursor: pointer; border: 0; background: none; padding: 0; width: 100%; }
+.flash .in { position: relative; width: 100%; height: 100%; transition: transform .45s; transform-style: preserve-3d; }
+.flash.flipped .in { transform: rotateY(180deg); }
+.flash .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 22px; display: grid; place-items: center; align-content: center; gap: 6px; padding: 20px; text-align: center; border: 1px solid var(--line); background: var(--paper); }
+.flash .back { transform: rotateY(180deg); background: var(--board); color: var(--board-ink); border: 0; }
+.flash .emo { font-size: 84px; line-height: 1.1; }
+.flash .w { font-family: var(--display); font-weight: 600; font-size: 40px; }
+.flash .back .zhw { font-size: 30px; font-weight: 800; }
+.flash .back .ex { color: var(--board-muted); font-size: 16px; }
+.flash .tap { font-size: 12px; color: var(--muted); }
+.flash .back .tap { color: var(--board-muted); }
+@media (prefers-reduced-motion: reduce) { .flash .in { transition: none; } }
+.deck-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-top: 12px; }
+.deck-bar .count { color: var(--muted); font-size: 14px; font-weight: 700; }
+.deck-bar .g { display: flex; gap: 8px; flex-wrap: wrap; }
+.known-tag { font-size: 12px; font-weight: 800; color: var(--fix); }
+.quiz .q { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; margin-bottom: 12px; }
+.quiz .q .emo { font-size: 48px; }
+.quiz .q b { font-size: 22px; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.opts button { border: 1.5px solid var(--line); background: var(--paper); border-radius: 12px; padding: 10px; font-weight: 800; font-size: 16px; cursor: pointer; }
+.opts button.right { background: var(--fix-bg); border-color: var(--fix); color: var(--fix); }
+.opts button.wrong { border-color: var(--warn); color: var(--warn); }
+.quiz .fb { min-height: 1.5em; font-weight: 800; margin: 10px 0 0; }
+
+/* ---------- progress ---------- */
+.stat-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.stat-row .card { padding: 14px; }
+.stat-row b { display: block; font-family: var(--display); font-weight: 600; font-size: 32px; line-height: 1.1; }
+.stat-row small { color: var(--muted); font-size: 13px; }
+.prog-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.scene-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.scene-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.scene-list li:last-child { border-bottom: 0; }
+.best { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.best li { background: var(--soft); border-radius: 10px; padding: 6px 10px; }
+.wordchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.wordchips span { background: var(--fix-bg); color: var(--fix); font-weight: 800; font-size: 13px; border-radius: 999px; padding: 2px 10px; }
+.danger { color: var(--warn); border-color: var(--warn); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .practice, .words, .review, .prog-grid, .home-bottom { grid-template-columns: minmax(0, 1fr); }
+  .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .shell { grid-template-columns: minmax(0, 1fr); background: none; }
+  .side { position: static; height: auto; padding: 14px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); gap: 12px; }
+  .nav { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .nav button { flex-direction: column; gap: 2px; padding: 8px 4px; text-align: center; }
+  .nav span small { display: none; }
+  .nav span b { font-size: 13px; }
+  .settings { margin-top: 0; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .settings h3, .side .demo { display: none; }
+  .main { padding: 20px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+  .hero { grid-template-columns: minmax(0, 1fr); padding: 20px; }
+  .hero svg { width: 72px; height: 72px; }
+  .hero h1 { font-size: 28px; }
+  .steps3 { grid-template-columns: minmax(0, 1fr); }
+  .board { height: 480px; }
+  .page-head h1 { font-size: 26px; }
+  .flash { height: 260px; }
+  .scene-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; margin-inline: -16px; padding-inline: 16px; scrollbar-width: none; }
+  .scene-row .chip { flex: none; }
+  .tiles { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { padding: 12px; }
+  .toggle button { font-size: 12px; padding: 5px 4px; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="sun" viewBox="0 0 64 64">
+    <g stroke="var(--sunny)" stroke-width="4" stroke-linecap="round">
+      <line x1="32" y1="3" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="61"/>
+      <line x1="3" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="61" y2="32"/>
+      <line x1="11.5" y1="11.5" x2="17" y2="17"/><line x1="47" y1="47" x2="52.5" y2="52.5"/>
+      <line x1="11.5" y1="52.5" x2="17" y2="47"/><line x1="47" y1="17" x2="52.5" y2="11.5"/>
+    </g>
+    <circle cx="32" cy="32" r="17" fill="var(--sunny)"/>
+    <circle cx="26" cy="30" r="2.2" fill="#3a2506"/><circle cx="38" cy="30" r="2.2" fill="#3a2506"/>
+    <path d="M25 37 Q32 43 39 37" fill="none" stroke="#3a2506" stroke-width="2.4" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="shell">
+  <aside class="side">
+    <button class="brand" type="button" data-go="home">
+      <svg aria-hidden="true"><use href="#sun"/></svg>
+      <span><b>Miss Sunny</b><small>English speaking buddy · 英语口语小伙伴</small></span>
+    </button>
+    <nav class="nav" aria-label="Main">
+      <button type="button" data-page="home" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span><b>Home</b><small>首页</small></span>
+      </button>
+      <button type="button" data-page="talk">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span><b>Talk</b><small>情景对话</small></span>
+      </button>
+      <button type="button" data-page="words">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span><b>Word cards</b><small>单词卡</small></span>
+      </button>
+      <button type="button" data-page="progress">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span><b>My stars</b><small>我的进步</small></span>
+      </button>
+    </nav>
+    <div class="settings">
+      <h3>Settings 设置</h3>
+      <div class="toggle" role="group" aria-label="Chinese help">
+        <button type="button" data-zh="1" aria-pressed="true">中文帮助 开</button>
+        <button type="button" data-zh="0" aria-pressed="false">关</button>
+      </div>
+      <div class="toggle" role="group" aria-label="Voice speed">
+        <button type="button" data-rate="0.7" aria-pressed="false">Slow 慢</button>
+        <button type="button" data-rate="0.9" aria-pressed="true">Normal 正常</button>
+      </div>
+      <p class="demo">Demo version: Miss Sunny uses lesson scripts and a rule-based chat brain with memory. No AI account or key needed.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- HOME -->
+    <section class="page" id="page-home">
+      <div class="hero">
+        <svg aria-hidden="true"><use href="#sun"/></svg>
+        <div>
+          <h1 id="hero-h1">Hi! I'm Miss Sunny.</h1>
+          <p>Let's speak English together! Pick a scene, listen, then talk with me. I'll help you say it better.<span class="zh"><br>和 Sunny 老师一起说英语！选一个场景，先听，再和我对话，我会帮你把句子说得更好。</span></p>
+          <div class="row">
+            <button class="btn" type="button" data-start="meet">Start talking 开始对话</button>
+            <button class="btn ghost" type="button" data-go="words">Learn words 学单词</button>
+            <button class="btn ghost" type="button" data-start="free">Free chat 自由聊天</button>
+          </div>
+        </div>
+      </div>
+      <div class="steps3">
+        <div class="card"><span class="num">1</span><h3>Listen &amp; learn</h3><p>Hear 5 key sentences. Tap the mic to say them after me.<span class="zh"> 听 5 个关键句，跟读。</span></p></div>
+        <div class="card"><span class="num">2</span><h3>Practice</h3><p>Answer my questions. Stuck? Use a hint, a sentence starter or an example.<span class="zh"> 回答问题，卡住了可以用提示。</span></p></div>
+        <div class="card"><span class="num">3</span><h3>Review</h3><p>See your stars and the "Better" sentences to remember.<span class="zh"> 看星星，复习更好的说法。</span></p></div>
+      </div>
+      <div class="sec-title"><h2>Pick a scene <span class="zh">选一个场景</span></h2><span id="home-count"></span></div>
+      <div class="tiles" id="home-tiles"></div>
+      <div class="home-bottom">
+        <div class="card wod" id="wod"></div>
+        <div class="card">
+          <div class="sec-title"><h2>My stars <span class="zh">我的进步</span></h2></div>
+          <div class="mini-stats" id="mini-stats"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TALK -->
+    <section class="page" id="page-talk" hidden>
+      <div class="page-head">
+        <p class="eyebrow">Talk with Miss Sunny</p>
+        <h1>Conversation practice <span class="zh">情景对话</span></h1>
+      </div>
+      <div class="scene-row" id="scene-row"></div>
+      <div class="scene-head">
+        <div class="t"><span class="emo" id="sc-emo"></span><div><h2 id="sc-title"></h2><p id="sc-sub"></p></div></div>
+        <div class="tabs" role="tablist" id="step-tabs">
+          <button type="button" role="tab" data-step="learn" aria-selected="true">1. Listen &amp; learn</button>
+          <button type="button" role="tab" data-step="practice" aria-selected="false">2. Practice</button>
+          <button type="button" role="tab" data-step="review" aria-selected="false">3. Review</button>
+        </div>
+      </div>
+
+      <div id="step-learn">
+        <div class="phrases" id="phrases"></div>
+        <div class="learn-foot">
+          <p id="learn-tip">Tap ▶ to listen. Tap the mic to say it after me.<span class="zh"> 点 ▶ 听，点麦克风跟读。</span></p>
+          <button class="btn" type="button" id="to-practice">Ready? Start practice →</button>
+        </div>
+      </div>
+
+      <div id="step-practice" hidden>
+        <div class="practice">
+          <div class="board">
+            <div class="chat" id="chat" aria-live="polite"></div>
+            <div class="quick" id="quick" hidden></div>
+            <form class="ask" id="ask" autocomplete="off">
+              <button class="mic" type="button" id="mic" aria-label="Speak in English" hidden><svg aria-hidden="true"><use href="#mic"/></svg></button>
+              <label class="sr" for="say-in">Your answer</label>
+              <input id="say-in" type="text" maxlength="160" placeholder="Type or tap the mic…">
+              <button type="submit">Send</button>
+            </form>
+            <p class="status" id="status" aria-live="polite"></p>
+          </div>
+          <div class="help">
+            <div class="card" id="mem-card" hidden>
+              <h3>Miss Sunny remembers <span class="zh">Sunny 老师记得</span></h3>
+              <ul class="mem" id="mem"></ul>
+              <button class="btn ghost small" type="button" id="forget" style="margin-top:8px">Forget me 清除记忆</button>
+            </div>
+            <div class="card" id="turn-card">
+              <h3 id="turn-title">Question 1 of 5</h3>
+              <div class="dots" id="dots"></div>
+              <p class="meta" id="turn-zh"></p>
+            </div>
+            <div class="card">
+              <h3>Need help? <span class="zh">需要帮忙？</span></h3>
+              <div class="supports" id="supports">
+                <button type="button" data-help="again">🔁 Say again<small>再说一遍 (慢)</small></button>
+                <button type="button" data-help="zh">🀄 Chinese<small>中文意思</small></button>
+                <button type="button" data-help="starter">✏️ Starter<small>句子开头</small></button>
+                <button type="button" data-help="example">💡 Example<small>示范答案</small></button>
+              </div>
+            </div>
+            <div class="card">
+              <h3 id="useful-title">Useful sentences <span class="zh">有用的句子</span></h3>
+              <ul class="useful" id="useful"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-review" hidden>
+        <div class="review">
+          <div class="card big" id="rev-big"></div>
+          <div class="card">
+            <h3>Remember these <span class="zh">记住这些更好的说法</span></h3>
+            <div id="rev-fix"></div>
+            <h3 style="margin-top:16px">You said it well! <span class="zh">你说得很好的句子</span></h3>
+            <div id="rev-good"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORDS -->
+    <section class="page" id="page-words" hidden>
+      <div class="page-head">
+        <p class="eyebrow">Word cards</p>
+        <h1>Learn new words <span class="zh">单词卡</span></h1>
+        <p>Tap the card to flip it. Listen, then tell me if you know it.<span class="zh"> 点卡片翻面，听发音，再标记会不会。</span></p>
+      </div>
+      <div class="scene-row" id="cat-row"></div>
+      <div class="words">
+        <div>
+          <button class="flash" type="button" id="flash" aria-label="Flip card">
+            <div class="in">
+              <div class="face front"><span class="emo" id="f-emo"></span><span class="w" id="f-w"></span><span class="tap">Tap to flip · 点击翻面</span></div>
+              <div class="face back"><span class="zhw" id="f-zh"></span><span class="ex" id="f-ex"></span><span class="tap">Tap to flip back</span></div>
+            </div>
+          </button>
+          <div class="deck-bar">
+            <div class="g">
+              <button class="btn ghost small" type="button" id="f-prev">← Back</button>
+              <button class="btn ghost small" type="button" id="f-say">▶ Listen</button>
+              <button class="micbtn" type="button" id="f-mic" aria-label="Say this word" hidden><svg aria-hidden="true"><use href="#mic"/></svg></button>
+            </div>
+            <span class="count" id="f-count"></span>
+            <div class="g">
+              <button class="btn ghost small" type="button" id="f-learning">Still learning</button>
+              <button class="btn small" type="button" id="f-know">I know it ✓</button>
+            </div>
+          </div>
+          <p class="status" id="f-status" style="color:var(--fix);margin-top:8px"></p>
+        </div>
+        <div class="card quiz" id="quiz"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="page" id="page-progress" hidden>
+      <div class="page-head">
+        <p class="eyebrow">My stars</p>
+        <h1>My progress <span class="zh">我的进步</span></h1>
+        <p>Saved on this device only. <span class="zh">记录只保存在这台设备上。</span></p>
+      </div>
+      <div class="stat-row" id="stat-row"></div>
+      <div class="prog-grid">
+        <div class="card"><h3 style="margin-bottom:8px">Scenes <span class="zh">场景星星</span></h3><ul class="scene-list" id="p-scenes"></ul></div>
+        <div style="display:grid;gap:14px">
+          <div class="card"><h3 style="margin-bottom:8px">My best sentences <span class="zh">我的好句子</span></h3><ul class="best" id="p-best"></ul></div>
+          <div class="card"><h3 style="margin-bottom:8px">Miss Sunny remembers <span class="zh">Sunny 老师记得我</span></h3><ul class="mem" id="p-mem"></ul></div>
+          <div class="card"><h3 style="margin-bottom:8px">Words I know <span class="zh">我会的单词</span></h3><div class="wordchips" id="p-words"></div></div>
+          <div><button class="btn ghost small danger" type="button" id="reset">Start over 清空记录</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function cap(s) { s = String(s || '').trim(); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function title(s) { return String(s || '').trim().split(' ').map(cap).join(' '); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  /* ================= vocabulary for matching ================= */
+  var V = {
+    NUM: '\\d{1,3}|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty',
+    FOOD: 'apples?|bananas?|oranges?|grapes?|pears?|peach(?:es)?|strawberr(?:y|ies)|watermelons?|mangoe?s?|cherr(?:y|ies)|lemons?|milk|bread|eggs?|rice|noodles?|dumplings?|porridge|congee|soup|cakes?|cookies?|candy|chocolate|ice cream|pizza|hamburgers?|burgers?|sandwich(?:es)?|hot dogs?|chips|fries|chicken|fish|meat|pork|beef|vegetables?|carrots?|tomato(?:es)?|potato(?:es)?|corn|salad|cereal|yogurt|juice|tea|baozi|buns?|jiaozi|cheese|sausages?|pancakes?|toast|seafood|shrimps?|jam|honey|tofu|hotpot|hot pot|sushi|pasta|spaghetti',
+    FRUIT: 'apples?|bananas?|oranges?|grapes?|pears?|peach(?:es)?|strawberr(?:y|ies)|watermelons?|mangoe?s?|cherr(?:y|ies)|lemons?|kiwis?|pineapples?',
+    DRINK: 'juice|milk|water|tea|cola|coke|soda|lemonade|hot chocolate|orange juice|apple juice',
+    ANIMAL: 'dogs?|cats?|pandas?|rabbits?|bunn(?:y|ies)|birds?|tigers?|lions?|monkeys?|elephants?|giraffes?|horses?|pigs?|cows?|sheep|ducks?|chickens?|fish|goldfish|turtles?|hamsters?|parrots?|bears?|zebras?|kangaroos?|penguins?|dolphins?|whales?|snakes?|frogs?|mice|mouse|foxe?s?|wolf|wolves|koalas?|owls?|butterfl(?:y|ies)|puppy|puppies|kittens?|dinosaurs?|deer|squirrels?|ants?',
+    COLOR: 'red|blue|green|yellow|black|white|pink|purple|orange|brown|grey|gray|gold|silver|colorful',
+    FAMILY: 'mom|mum|mommy|mother|dad|daddy|father|sisters?|brothers?|grandma|grandpa|grandmother|grandfather|grandparents|baby|parents|uncle|aunt|cousins?|me',
+    JOB: 'teacher|doctor|nurse|driver|worker|farmer|cook|chef|police officer|policeman|policewoman|engineer|businessman|businesswoman|boss|pilot|artist|singer|writer|scientist|programmer|dancer|lawyer|manager|accountant|shopkeeper|seller|salesman|soldier|firefighter|fireman|postman|housewife|designer|reporter|vet|dentist|student|officer|clerk|waiter|waitress|builder',
+    SUBJECT: 'english|math|maths|chinese|science|music|art|pe|p e|sports?|history|computer|reading|drawing|dance|ict|geography|moral',
+    SCHOOL: 'books?|pencils?|pens?|rulers?|erasers?|rubbers?|crayons?|notebooks?|exercise books?|water bottle|bottle|pencil case|pencil box|lunch box|glue|scissors|homework|dictionary|calculator|markers?|tissues?|umbrella|snacks?|ipad|textbooks?|sharpener',
+    TIME: '\\d{1,2}(?::\\d{2})?(?: ?(?:am|pm|o\'clock|oclock|o clock))?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|half past \\w+|a quarter past \\w+',
+    WEATHER: 'sunny|rainy|raining|cloudy|windy|snowy|snowing|hot|cold|warm|cool|foggy|stormy|nice|fine|wet|dry|bright|freezing',
+    SEASON: 'spring|summer|autumn|fall|winter',
+    CLOTHES: 'coat|jacket|hat|cap|gloves?|scarf|sweater|jumper|boots|socks?|pants|trousers|jeans|shirt|t-shirt|t shirt|dress|skirt|shoes|hoodie|raincoat|mittens?|down jacket|shorts|vest',
+    SPORT: 'football|soccer|basketball|ping-pong|ping pong|table tennis|tennis|badminton|volleyball|baseball|swimming|running|skating|skiing|jump rope|rope skipping|skipping|cycling|riding|taekwondo|kung fu|karate|yoga|chess|golf|hockey|gymnastics|dancing',
+    HOBBY: 'read(?:ing)?|draw(?:ing)?|paint(?:ing)?|sing(?:ing)?|danc(?:e|ing)|swim(?:ming)?|play(?:ing)?|cook(?:ing)?|watch(?:ing)?|music|piano|guitar|violin|games?|video games|lego|legos|cartoons?|tv|movies?|books?|ride|riding|run(?:ning)?|chess|puzzles?|origami|photos?|hik(?:e|ing)|camping|fishing|garden(?:ing)?|writ(?:e|ing)|stories|calligraphy',
+    MONTH: 'january|february|march|april|may|june|july|august|september|october|november|december|spring|summer|autumn|fall|winter',
+    TRANSPORT: 'bus|car|bike|bicycle|subway|metro|train|taxi|school bus|scooter|e-bike|motorbike|foot|walk|walking',
+    CAKE: 'chocolate|strawberry|fruit|cream|cheese|vanilla|mango|ice cream|carrot|banana|lemon|matcha|rainbow|birthday',
+    YES: 'yes|yeah|yep|sure|of course|i do|i can|i have|i did|ok|okay',
+    NO: 'no|nope|not|don\'t|dont|can\'t|cant|haven\'t|didn\'t|never'
+  };
+  function R(re) {
+    return new RegExp(re.source.replace(/@([A-Z]+)/g, function (_, k) { return '\\b(' + V[k] + ')\\b'; }), 'i');
+  }
+  var NUMVAL = { one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9, ten:10, eleven:11, twelve:12, thirteen:13, fourteen:14, fifteen:15, sixteen:16, seventeen:17, eighteen:18, nineteen:19, twenty:20 };
+
+  /* ================= scenes: learn phrases + 5 practice turns each ================= */
+  // turn: q, zh, starter, example, patterns [regex, Sunny's reply, optional full-sentence recast]
+  var SCENES = [
+    { id: 'meet', emo: '👋', en: 'Meet Miss Sunny', zh: '打招呼 · 自我介绍', hello: "Hello, hello! Let's get to know each other.",
+      learn: [["Hello! My name is Lily.", "你好！我叫莉莉。"], ["How are you? I'm fine, thank you.", "你好吗？我很好，谢谢。"], ["How old are you? I'm nine years old.", "你几岁？我九岁。"], ["Where are you from? I'm from China.", "你来自哪里？我来自中国。"], ["Nice to meet you!", "很高兴认识你！"]],
+      turns: [
+        ["Hi there! I'm Miss Sunny. What's your name?", "你好！我是 Sunny 老师。你叫什么名字？", "My name is ", "My name is Lily.",
+          [[/(?:my name is|my name's|name is|i am|i'm|im|call me|this is)\s+([a-z]+)/, "Nice to meet you, $C1! What a lovely name."], [/^([a-z]+)$/, "Nice to meet you, $C1!", "My name is $C1."]]],
+        ["How are you today?", "你今天好吗？", "I'm ", "I'm fine, thank you. And you?",
+          [[/\b(fine|good|great|happy|ok|okay|well|excited|cool|wonderful|super|awesome|very good|not bad)\b/, "I'm glad to hear that! I'm happy today, too."], [/\b(tired|sad|sleepy|sick|bad|hungry|bored|nervous|angry|scared|so so|not good)\b/, "Oh, you feel $1. Thank you for telling me. Let's take a deep breath together."]]],
+        ["How old are you?", "你几岁了？", "I'm ", "I'm nine years old.",
+          [[/@NUM\s*years?\s*old/, "$1 years old! That's a great age."], [/(?:i am|i'm|im)\s+@NUM/, "You're $1! Wonderful.", "I'm $1 years old."], [/^@NUM$/, "$1! Wonderful.", "I'm $1 years old."]]],
+        ["Where are you from?", "你来自哪里？", "I'm from ", "I'm from Qingdao, China.",
+          [[/from\s+([a-z][a-z ]*)/, "$T1? Cool! I'd love to visit someday."], [/(?:i live in|i'm in|i am in)\s+([a-z][a-z ]*)/, "$T1? How nice!", "I'm from $T1."], [/^([a-z][a-z ]*)$/, "$T1? Cool!", "I'm from $T1."]]],
+        ["What do you like to do for fun?", "你平时喜欢做什么好玩的事？", "I like ", "I like drawing and singing.",
+          [[/i (?:like|love|enjoy|really like)\s+(.+)/, "Oh, you like $1! That sounds fun."], [/@HOBBY/, "That sounds fun!", "I like $1."]]]
+      ], bye: "It was so nice to meet you! See you next time." },
+
+    { id: 'family', emo: '👨‍👩‍👧', en: 'My family', zh: '我的家人', hello: "Let's talk about your family. I love family stories!",
+      learn: [["There are four people in my family.", "我家有四口人。"], ["This is my mother. She is a doctor.", "这是我妈妈，她是一名医生。"], ["I have a little brother.", "我有一个弟弟。"], ["My dad likes cooking.", "我爸爸喜欢做饭。"], ["We play games together.", "我们一起玩游戏。"]],
+      turns: [
+        ["How many people are there in your family?", "你家有几口人？", "There are ", "There are four people in my family.",
+          [[/there (?:are|is)\s+@NUM\s+people/, "$1 people. What a nice family!"], [/@NUM/, "$1 people! Lovely.", "There are $1 people in my family."]]],
+        ["Who are they?", "他们是谁？", "My ", "My mom, my dad, my sister and me.",
+          [[/@FAMILY/, "Your family sounds wonderful!"]]],
+        ["What does your mom or dad do?", "你爸爸或妈妈是做什么工作的？", "My mom is a ", "My mom is a teacher.",
+          [[/(?:is|'s)\s+(?:a |an )@JOB/, "A $1! That's an important job."], [/@JOB/, "A $1! Cool.", "My mom is a $1."], [/(?:work|works) (?:in|at) (?:a |an |the )?([a-z ]+)/, "In a $1? Interesting!"]]],
+        ["Do you have any brothers or sisters?", "你有兄弟姐妹吗？", "Yes, I have ", "Yes, I have a little sister.",
+          [[/have\s+(?:a |an |one |two |three )?(?:little |big |younger |older |baby |twin )?(brothers?|sisters?)/, "How nice to have a $1! Do you play together?"], [/\b(no|don't|dont|only child)\b/, "OK! Being the only child is special, too."], [/\b(brothers?|sisters?)\b/, "How nice!", "I have a $1."], [/@YES/, "Great! Brothers and sisters are fun.", "Yes, I have a brother."]]],
+        ["What do you do with your family on weekends?", "周末你和家人一起做什么？", "We ", "We go to the park together.",
+          [[/\bwe\s+(.+)/, "That sounds like a happy weekend!"], [/\b(park|beach|movies?|shopping|cook|eat|play|visit|watch|walk|swim|hike|zoo|museum|grandma|grandpa|picnic|games?|tv|travel|clean)\b/, "That sounds fun!", "We go to the $1 together."]]]
+      ], bye: "Thank you for telling me about your family. They sound lovely!" },
+
+    { id: 'school', emo: '🏫', en: 'At school', zh: '在学校', hello: "School time! Tell me about your school day.",
+      learn: [["My favorite subject is English.", "我最喜欢的科目是英语。"], ["I have a pencil case in my bag.", "我书包里有一个笔袋。"], ["School starts at eight o'clock.", "学校八点开始上课。"], ["At break time, I play with my friends.", "课间我和朋友们一起玩。"], ["My teacher is very kind.", "我的老师很和蔼。"]],
+      turns: [
+        ["What's your favorite subject?", "你最喜欢的科目是什么？", "My favorite subject is ", "My favorite subject is math.",
+          [[/(?:favorite|favourite) (?:subject|class|lesson) is\s+@SUBJECT/, "$C1 is great! I love it too."], [/@SUBJECT/, "$C1! Great choice.", "My favorite subject is $C1."]]],
+        ["What's in your school bag?", "你的书包里有什么？", "I have ", "I have books, a pencil case and a ruler.",
+          [[/@SCHOOL/, "Good! You are ready for school."]]],
+        ["What time does school start?", "学校几点开始上课？", "School starts at ", "School starts at eight o'clock.",
+          [[/(?:at|starts)\s+@TIME/, "At $1. Do you get up early?"], [/@TIME/, "$1! Got it.", "School starts at $1."]]],
+        ["What do you do at break time?", "课间休息你做什么？", "I ", "I play with my friends.",
+          [[/\b(play|talk|read|run|jump|chat|eat|draw|rest|skip|football|games?|tag|toilet|drink|walk|hide and seek)\b/, "Sounds fun! A good break helps you learn better."]]],
+        ["Tell me about your teacher.", "说说你的老师吧。", "My teacher is ", "My teacher is very kind and funny.",
+          [[/\b(kind|nice|funny|strict|friendly|good|beautiful|pretty|tall|smart|patient|great|cool|young|old|clever|helpful|lovely|serious)\b/, "Your teacher sounds $1! Say thank you to your teacher tomorrow."]]]
+      ], bye: "You're a great student! Have a fun day at school." },
+
+    { id: 'food', emo: '🍜', en: 'Yummy food', zh: '美食', hello: "Mmm, I'm a little hungry. Let's talk about food!",
+      learn: [["I have milk and bread for breakfast.", "我早餐吃牛奶和面包。"], ["My favorite food is dumplings.", "我最喜欢的食物是饺子。"], ["I'm hungry. Can I have an apple?", "我饿了，我可以吃个苹果吗？"], ["Would you like some juice? Yes, please.", "你想喝点果汁吗？好的，谢谢。"], ["It's delicious!", "真好吃！"]],
+      turns: [
+        ["What do you have for breakfast?", "你早餐吃什么？", "I have ", "I have milk and eggs for breakfast.",
+          [[/@FOOD/, "$C1 for breakfast? Yummy! Breakfast gives you energy."], [/@DRINK/, "$C1? Nice!", "I have $1 for breakfast."]]],
+        ["What's your favorite food?", "你最喜欢的食物是什么？", "My favorite food is ", "My favorite food is noodles.",
+          [[/(?:favorite|favourite) food is\s+@FOOD/, "$C1! I love $1 too."], [/@FOOD/, "$C1! Yummy.", "My favorite food is $1."]]],
+        ["Do you like vegetables?", "你喜欢吃蔬菜吗？", "Yes, I do. I like ", "Yes, I do. I like carrots.",
+          [[/\b(no|don't|dont|not really)\b/, "That's OK. Maybe try a little corn or carrot. They make you strong!"], [/@YES|\bi like\b|\bi love\b|\b(carrots?|tomato(?:es)?|potato(?:es)?|corn|cabbage|broccoli|cucumbers?|peas|beans|lettuce|spinach|onions?|peppers?|pumpkins?)\b/, "Great! Vegetables make you strong and healthy."]]],
+        ["Would you like some juice or milk?", "你想喝果汁还是牛奶？", "", "Juice, please.",
+          [[/@DRINK.*please|please.*@DRINK/, "Here you are. Such good manners!"], [/@DRINK/, "Here you are. One $1!", "$C1, please."], [/\b(no thanks|no thank you|no)\b/, "OK, no problem!"]]],
+        ["Here's some juice. How does it taste?", "给你果汁，味道怎么样？", "It's ", "It's delicious!",
+          [[/\b(delicious|yummy|good|great|sweet|nice|tasty|sour|salty|spicy|bad|cold|fresh|amazing)\b/, "$C1! Thank you for telling me."]]]
+      ], bye: "Now I'm really hungry! Enjoy your lunch." },
+
+    { id: 'animals', emo: '🐼', en: 'Animals', zh: '动物', hello: "Animals are so much fun. Let's talk about them!",
+      learn: [["I have a pet dog. His name is Bobo.", "我有一只宠物狗，它叫波波。"], ["My favorite animal is the panda.", "我最喜欢的动物是熊猫。"], ["A rabbit has long ears.", "兔子有长长的耳朵。"], ["Birds can fly. Fish can swim.", "鸟会飞，鱼会游泳。"], ["Let's go to the zoo!", "我们去动物园吧！"]],
+      turns: [
+        ["Do you have a pet?", "你有宠物吗？", "Yes, I have a ", "Yes, I have a cat.",
+          [[/have\s+(?:a |an |two |some )?@ANIMAL/, "A $1! How cute. What's its name?"], [/\b(no|don't|dont)\b/, "That's OK. Maybe one day!"], [/@ANIMAL/, "A $1! How cute.", "I have a $1."]]],
+        ["What's your favorite animal?", "你最喜欢的动物是什么？", "My favorite animal is ", "My favorite animal is the panda.",
+          [[/@ANIMAL/, "I like $1 too! They are so cute."]]],
+        ["What can it do?", "它会做什么？", "It can ", "It can run fast.",
+          [[/\bcan\s+(\w+(?: \w+)?)/, "Wow, it can $1! Amazing."], [/\b(run|jump|swim|fly|climb|sing|eat|sleep|talk|dance|play|hop|roll|catch)\b/, "Wow!", "It can $1."]]],
+        ["What color is it?", "它是什么颜色的？", "It's ", "It's black and white.",
+          [[/@COLOR/, "$C1! That's a beautiful color."]]],
+        ["What animals can we see at the zoo?", "在动物园我们能看到哪些动物？", "We can see ", "We can see lions, monkeys and elephants.",
+          [[/@ANIMAL/, "Let's go to the zoo together one day!"]]]
+      ], bye: "Roar! That was fun. Goodbye, animal expert!" },
+
+    { id: 'weather', emo: '🌦️', en: 'Weather & seasons', zh: '天气和季节', hello: "Let's look out of the window and talk about the weather.",
+      learn: [["It's sunny today.", "今天天气晴朗。"], ["It's cold. Put on your coat.", "天冷了，穿上外套。"], ["My favorite season is summer.", "我最喜欢的季节是夏天。"], ["In winter, I make a snowman.", "冬天我堆雪人。"], ["Take an umbrella. It's rainy.", "带把伞，下雨了。"]],
+      turns: [
+        ["What's the weather like today?", "今天天气怎么样？", "It's ", "It's sunny and warm.",
+          [[/(?:it's|it is|its)\s+(?:very |so |a bit |a little )?@WEATHER/, "$C1 today! Thanks for the weather report."], [/@WEATHER/, "$C1! Thanks.", "It's $1 today."]]],
+        ["What's your favorite season?", "你最喜欢哪个季节？", "My favorite season is ", "My favorite season is spring.",
+          [[/@SEASON/, "$C1 is lovely!"]]],
+        ["Why do you like it?", "为什么喜欢它？", "Because I can ", "Because I can swim in the sea.",
+          [[/because\s+(.+)/, "Good reason! I like that too."], [/\b(swim|snow|snowman|flowers?|warm|cool|holiday|vacation|play|ice cream|kite|beach|skate|ski|fruit|leaves|rain|sun|birthday|festival|new year)\b/, "Good reason!"]]],
+        ["Oh no, it's raining! What do you need?", "哎呀，下雨了！你需要什么？", "I need ", "I need an umbrella.",
+          [[/\b(umbrella|raincoat|boots|rain boots|hat|coat|jacket)\b/, "Yes, a $1 keeps you dry!"]]],
+        ["What do you wear on a cold day?", "天冷的时候你穿什么？", "I wear ", "I wear a coat, a hat and gloves.",
+          [[/@CLOTHES/, "Good idea! Stay warm."]]]
+      ], bye: "Whatever the weather, have a sunny day!" },
+
+    { id: 'hobby', emo: '⚽', en: 'Hobbies & weekends', zh: '爱好和周末', hello: "Free time is the best time! Let's talk about your hobbies.",
+      learn: [["I like playing football.", "我喜欢踢足球。"], ["I can swim, but I can't skate.", "我会游泳，但不会滑冰。"], ["On Saturday, I go to my piano class.", "星期六我去上钢琴课。"], ["I'm good at drawing.", "我擅长画画。"], ["Let's play together!", "我们一起玩吧！"]],
+      turns: [
+        ["What do you like doing in your free time?", "空闲时你喜欢做什么？", "I like ", "I like reading books.",
+          [[/i (?:like|love|enjoy)\s+(.+)/, "You like $1? That's a great hobby."], [/@HOBBY/, "Great hobby!", "I like $1."]]],
+        ["Can you swim?", "你会游泳吗？", "Yes, I can. / No, I can't.", "Yes, I can. I swim every summer.",
+          [[/\b(can't|cant|cannot|no|not)\b/, "That's OK! You can learn. I can help you practice saying it first!"], [/\b(yes|can|sure|of course)\b/, "Wow, you can swim! Swimming is good exercise."]]],
+        ["What sport do you like?", "你喜欢什么运动？", "I like playing ", "I like playing basketball.",
+          [[/@SPORT/, "$C1! That's exciting."]]],
+        ["What do you do on weekends?", "你周末做什么？", "On weekends, I ", "On weekends, I go to my art class.",
+          [[/\b(i|we)\s+(?:usually |often |always |sometimes )?(go|play|watch|read|do|have|visit|sleep|swim|draw|stay|help|learn|practice|ride|eat|clean|make|take)\b(.*)/, "That sounds like a busy and happy weekend!"], [/@HOBBY|\b(class|homework|park|home|shopping)\b/, "Sounds fun!", "On weekends, I go to my art class."]]],
+        ["What are you good at?", "你擅长什么？", "I'm good at ", "I'm good at singing.",
+          [[/good at\s+(.+)/, "You're good at $1? Super! Keep it up."], [/@HOBBY|@SPORT|@SUBJECT/, "Super!", "I'm good at $1."]]]
+      ], bye: "You have so many great hobbies. Have fun this weekend!" },
+
+    { id: 'shop', emo: '🛒', en: 'At the fruit shop', zh: '水果店购物', hello: "Let's play a game! I'm the shopkeeper. You're the customer.",
+      learn: [["Can I help you?", "需要帮忙吗？（店员）"], ["I'd like some apples, please.", "我想要一些苹果。"], ["How many do you want? Three, please.", "你要几个？三个，谢谢。"], ["How much is it? It's five yuan.", "多少钱？五元。"], ["Here you are. Thank you!", "给你。谢谢！"]],
+      turns: [
+        ["Welcome to Sunny's Fruit Shop! Can I help you?", "欢迎来到 Sunny 水果店！需要帮忙吗？", "I'd like some ", "I'd like some apples, please.",
+          [[/(?:i'd like|i would like|i want|can i have|may i have|i need)\s+(?:some |a |an |two |three )?@FRUIT/, "Sure! Our $1 are fresh and sweet."], [/@FRUIT/, "Sure, $1!", "I'd like some $1, please."]]],
+        ["How many do you want?", "你要几个？", "", "Three, please.",
+          [[/@NUM/, "$1. OK, here they are."]]],
+        ["Anything else?", "还要别的吗？", "Yes, ... please. / No, thank you.", "Yes, two bananas, please.",
+          [[/@FRUIT/, "OK, I'll add $1."], [/\b(no|nothing|that's all|thats all|that is all)\b/, "OK, that's all."], [/@YES/, "What else would you like?"]]],
+        ["That's ten yuan, please.", "一共十元。", "Here you are.", "Here you are.",
+          [[/here you (?:are|go)|here it is|here is|here's/, "Thank you!"], [/\b(ok|okay|sure|yuan|money|pay)\b/, "Thank you!", "Here you are."], [/how much/, "It's ten yuan."]]],
+        ["Thank you! Have a nice day!", "谢谢！祝你今天愉快！", "Thank you. ", "Thank you. You too! Goodbye!",
+          [[/\b(thank|thanks|bye|goodbye|you too|see you)\b/, "Goodbye! Come again!"]]]
+      ], bye: "You're a great shopper! Enjoy your fruit." },
+
+    { id: 'day', emo: '⏰', en: 'My day', zh: '我的一天', hello: "Let's talk about your day, from morning to night.",
+      learn: [["I get up at seven o'clock.", "我七点起床。"], ["I go to school by bus.", "我坐公交车上学。"], ["After school, I do my homework.", "放学后我写作业。"], ["I have dinner with my family.", "我和家人一起吃晚饭。"], ["I go to bed at nine.", "我九点睡觉。"]],
+      turns: [
+        ["What time do you get up?", "你几点起床？", "I get up at ", "I get up at seven o'clock.",
+          [[/(?:get up|wake up|got up)\s+at\s+@TIME/, "At $1? Good! The early bird catches the worm."], [/@TIME/, "$1! Good.", "I get up at $1."]]],
+        ["How do you go to school?", "你怎么去上学？", "I go to school by ", "I go to school by bus.",
+          [[/on foot|\bwalk(?:ing)?\b/, "On foot! Walking is healthy."], [/by\s+@TRANSPORT/, "By $1. Be safe on the way!"], [/@TRANSPORT/, "By $1! Got it.", "I go to school by $1."]]],
+        ["What do you do after school?", "放学后你做什么？", "After school, I ", "After school, I do my homework.",
+          [[/\b(homework|play|read|watch|eat|piano|class|swim|draw|rest|sleep|study|practice|run|games?|tv|outside|park|help)\b/, "Good! Homework first, then fun!"]]],
+        ["Who do you have dinner with?", "你和谁一起吃晚饭？", "I have dinner with ", "I have dinner with my family.",
+          [[/@FAMILY|\b(family|friends?|everyone|alone)\b/, "That's nice. Dinner time is family time!"]]],
+        ["What time do you go to bed?", "你几点睡觉？", "I go to bed at ", "I go to bed at nine o'clock.",
+          [[/(?:bed|sleep)\s+at\s+@TIME/, "At $1. Good night and sweet dreams!"], [/@TIME/, "$1. Sweet dreams!", "I go to bed at $1."]]]
+      ], bye: "What a busy day! You did great." },
+
+    { id: 'birthday', emo: '🎂', en: 'Birthday party', zh: '生日派对', hello: "Let's have a birthday party! Are you ready?",
+      learn: [["Happy birthday to you!", "祝你生日快乐！"], ["When is your birthday? It's in May.", "你的生日是什么时候？在五月。"], ["This gift is for you.", "这个礼物送给你。"], ["Let's eat the birthday cake!", "我们来吃生日蛋糕吧！"], ["Make a wish!", "许个愿吧！"]],
+      turns: [
+        ["When is your birthday?", "你的生日是什么时候？", "My birthday is in ", "My birthday is in May.",
+          [[/(?:birthday is|it's|it is)\s+(?:in |on )?@MONTH/, "$C1! That's a great month for a party."], [/@MONTH/, "$C1! Nice.", "My birthday is in $C1."]]],
+        ["What do you want for your birthday?", "生日你想要什么？", "I want a ", "I want a new bike.",
+          [[/(?:i want|i'd like|i would like|i wish for|i hope)\s+(?:a |an |some |to )?(.+)/, "$C1? What a nice wish!"], [/^([a-z ]+)$/, "$C1? Nice!", "I want a $1."]]],
+        ["Here is a gift for you!", "这是送你的礼物！", "Thank you! ", "Thank you so much! I love it.",
+          [[/\b(thank|thanks)\b/, "You're welcome! I hope you like it."], [/\b(wow|cool|love|great|nice)\b/, "I'm glad you like it!", "Thank you! I love it."]]],
+        ["What kind of cake do you like?", "你喜欢什么蛋糕？", "I like ", "I like chocolate cake.",
+          [[/@CAKE/, "$C1 cake! Yummy. Let's have a big piece."]]],
+        ["Happy birthday to you! Now make a wish!", "祝你生日快乐！许个愿吧！", "I wish ", "I wish I can travel the world.",
+          [[/\bwish\b/, "What a beautiful wish! I hope it comes true."], [/^.{3,}$/, "What a lovely wish!", null]]]
+      ], bye: "Happy birthday! Thank you for coming to the party." }
+  ];
+  var SCENE_BY = {}; SCENES.forEach(function (s) { SCENE_BY[s.id] = s; });
+
+  var PRAISE = [["Great job!", "真棒！"], ["Well done!", "做得好！"], ["Excellent!", "太好了！"], ["Nice answer!", "回答得好！"], ["Super!", "超级棒！"], ["Awesome!", "厉害！"], ["Perfect!", "完美！"]];
+
+  /* ================= grammar recasts ("Better: ...") ================= */
+  var VERBS = ['eat', 'play', 'read', 'swim', 'draw', 'sing', 'cook', 'dance', 'run', 'watch', 'ride', 'write', 'go', 'jump', 'fly', 'make', 'skate', 'ski', 'paint', 'study', 'listen', 'walk', 'climb', 'bake', 'shop', 'sleep', 'talk', 'help', 'drink', 'learn', 'fish', 'hike', 'jog', 'skip'];
+  function ing(v) {
+    var irr = { swim: 'swimming', run: 'running', shop: 'shopping', jog: 'jogging', skip: 'skipping', sit: 'sitting', get: 'getting', ski: 'skiing' };
+    if (irr[v]) return irr[v];
+    if (/[^e]e$/.test(v)) return v.slice(0, -1) + 'ing';
+    return v + 'ing';
+  }
+  var ING2BASE = {}; VERBS.forEach(function (v) { ING2BASE[ing(v)] = v; });
+  function third(v) {
+    var irr = { have: 'has', go: 'goes', do: 'does', watch: 'watches', wash: 'washes', catch: 'catches', teach: 'teaches', fly: 'flies', study: 'studies', cry: 'cries', fix: 'fixes', kiss: 'kisses' };
+    return irr[v] || v + 's';
+  }
+  function plural(n) {
+    var irr = { child: 'children', fish: 'fish', sheep: 'sheep', mouse: 'mice', tooth: 'teeth', foot: 'feet', man: 'men', woman: 'women', deer: 'deer', wolf: 'wolves', leaf: 'leaves', knife: 'knives' };
+    if (irr[n]) return irr[n];
+    if (/(ch|sh|x|s)$/.test(n) || /(tomato|potato|mango)$/.test(n)) return n + 'es';
+    if (/[^aeiou]y$/.test(n)) return n.slice(0, -1) + 'ies';
+    return n + 's';
+  }
+  var COUNT = 'apple|banana|orange|pear|peach|grape|strawberry|cherry|mango|lemon|egg|cookie|cake|tomato|potato|carrot|sandwich|hamburger|dog|cat|panda|rabbit|bird|tiger|lion|monkey|elephant|giraffe|horse|pig|cow|duck|turtle|hamster|parrot|bear|zebra|penguin|dolphin|snake|frog|book|pencil|pen|ruler|eraser|crayon|notebook|toy|ball|friend|brother|sister|cousin|student|teacher|flower|tree|star|balloon|candle|kite|car|bike';
+  var AN = 'apple|egg|orange|elephant|umbrella|eraser|ice cream|owl|onion|ant|engineer|artist|eagle|octopus|English';
+  var JOBS1 = 'teacher|doctor|nurse|student|driver|farmer|cook|worker|pilot|engineer|artist|singer|policeman|writer|scientist|dancer|chef|vet|dentist|lawyer|programmer|designer|reporter';
+  var NUMS2 = 'two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|[2-9]|1[0-9]|20';
+
+  function norm(s) { return ' ' + String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z0-9':\- ]/g, ' ').replace(/\s+/g, ' ').trim() + ' '; }
+  function polish(raw) {
+    var s = norm(raw), before = s;
+    if (/^ (do|does|did|can|will|is|are|what|who|where|when|how|why) /.test(s)) return null; // questions: leave alone
+    s = s.replace(/ i very (like|love|want) /g, ' i really $1 ');
+    s = s.replace(/ (i am|i'm|im) (like|love|have|go|play|want|eat|live|study|need|agree|think) /g, ' i $2 ');
+    s = s.replace(/ (he|she) is (like|have|go|play|want|eat|live) /g, function (m, p, v) { return ' ' + p + ' ' + third(v) + ' '; });
+    s = s.replace(/ i have (\w+) years?(?: old)? /g, ' i am $1 years old ');
+    s = s.replace(/ (\w+) year old /g, function (m, n) { return (n === 'one' || n === '1' || n === 'a') ? m : ' ' + n + ' years old '; });
+    s = s.replace(/ (like|love|likes|loves|enjoy|enjoys) (eat|play|read|swim|draw|sing|cook|dance|run|watch|ride|write|jump|fly|make|skate|ski|paint|study|listen|walk|climb|bake|shop|talk|help|learn|fish|hike) /g, function (m, l, v) { return ' ' + l + ' ' + ing(v) + ' '; });
+    s = s.replace(/ (can|can't|cannot) (\w+ing) /g, function (m, c, v) { return ING2BASE[v] ? ' ' + c + ' ' + ING2BASE[v] + ' ' : m; });
+    s = s.replace(/ (he|she|it|my (?:mom|mum|mother|dad|father|sister|brother|teacher|friend|cat|dog|grandma|grandpa|grandmother|grandfather|baby|uncle|aunt)) (like|love|have|go|play|want|eat|watch|read|do|live|work|need|swim|run|cook|drink|sing|dance|teach|make|get) /g,
+      function (m, subj, v, off, str) { if (/ and $/.test(str.slice(0, off + 1))) return m; return ' ' + subj + ' ' + third(v) + ' '; });
+    s = s.replace(/ (he|she|it) don't /g, " $1 doesn't ");
+    s = s.replace(/ (is|am|i'm|she's|he's) (teacher|doctor|nurse|student|driver|farmer|cook|worker|pilot|engineer|artist|singer|policeman|writer|scientist|dancer|chef|vet|dentist|lawyer|programmer|designer|reporter) /g, function (m, b, j) { return ' ' + b + ' ' + (/^[aeiou]/.test(j) ? 'an ' : 'a ') + j + ' '; });
+    s = s.replace(/ there (?:have|has) /g, ' there are ');
+    s = s.replace(/ open the (light|lights|tv|computer|fan) /g, ' turn on the $1 ');
+    s = s.replace(/ close the (light|lights|tv|computer|fan) /g, ' turn off the $1 ');
+    s = s.replace(/ play the (football|basketball|ping-pong|tennis|volleyball|badminton|soccer|baseball|chess) /g, ' play $1 ');
+    s = s.replace(/ by (?:walk|foot|walking) /g, ' on foot ');
+    s = s.replace(/ go to home /g, ' go home ');
+    s = s.replace(/ thanks you /g, ' thank you ');
+    s = s.replace(new RegExp(' (' + NUMS2 + ') (' + COUNT + ') ', 'g'), function (m, n, w) { return ' ' + n + ' ' + plural(w) + ' '; });
+    s = s.replace(new RegExp(' (like|love|likes|loves) (' + COUNT.replace(/\|(brother|sister|cousin|student|teacher|friend)\b/g, '') + ') (?!juice|cake|pie|ice|milk|tea|bread|jam)', 'g'), function (m, l, w) { return ' ' + l + ' ' + plural(w) + ' '; });
+    s = s.replace(new RegExp(' (eating|eat|eats|want|wants|buy|need) (' + 'apple|banana|orange|pear|peach|grape|strawberry|cherry|mango|egg|cookie|carrot|tomato|potato' + ') (?!juice|cake|pie|ice|milk|tea|bread|jam)', 'g'), function (m, l, w) { return ' ' + l + ' ' + plural(w) + ' '; });
+    s = s.replace(new RegExp(' a (' + AN.toLowerCase() + ') ', 'g'), ' an $1 ');
+    if (s === before) return null;
+    return sentence(s, raw);
+  }
+  function sentence(s, raw) {
+    var keep = {};
+    String(raw).replace(/[A-Za-z']+/g, function (w, off) { if (off > 0 && /^[A-Z]/.test(w)) keep[w.toLowerCase()] = w; return w; });
+    var out = s.trim().split(' ').map(function (w) { return keep[w] || w; }).join(' ');
+    out = out.replace(/\bi\b/g, 'I').replace(/\bi'm\b/g, "I'm").replace(/\bi'd\b/g, "I'd").replace(/\b(english|chinese|china|qingdao|monday|tuesday|wednesday|thursday|friday|saturday|sunday|january|february|march|april|june|july|august|september|october|november|december)\b/g, cap);
+    return cap(out) + (/[.!?]$/.test(out) ? '' : '.');
+  }
+
+  /* ================= free chat rules ================= */
+  var JOKES = [["Why did the student eat his homework? Because the teacher said it was a piece of cake!", "为什么学生把作业吃了？因为老师说那是“小菜一碟”（a piece of cake 也是“一块蛋糕”）！"],
+    ["What do you call a bear with no teeth? A gummy bear!", "没有牙的熊叫什么？小熊软糖！"],
+    ["Why are fish so smart? Because they live in schools!", "鱼为什么聪明？因为它们住在 school 里（school 也指“鱼群”）！"],
+    ["What animal can jump higher than a house? All of them. Houses can't jump!", "什么动物跳得比房子高？所有动物，因为房子不会跳！"]];
+  var FOLLOW = [["What's your favorite food?", "你最喜欢什么食物？"], ["What animal do you like?", "你喜欢什么动物？"], ["What's the weather like today?", "今天天气怎么样？"], ["What's your favorite subject?", "你最喜欢哪门课？"], ["What do you like doing on weekends?", "你周末喜欢做什么？"], ["Who is in your family?", "你家里有谁？"], ["What color do you like?", "你喜欢什么颜色？"], ["Can you swim?", "你会游泳吗？"]];
+  var fi = 0;
+  function follow() { var f = FOLLOW[fi % FOLLOW.length]; fi++; return f; }
+  var ZH_HINT = [[/猫/, 'I like cats.'], [/狗/, 'I like dogs.'], [/熊猫/, 'I like pandas.'], [/苹果/, 'I like apples.'], [/香蕉/, 'I like bananas.'], [/面条/, 'I like noodles.'], [/饺子/, 'I like dumplings.'], [/米饭/, 'I like rice.'],
+    [/妈妈/, 'This is my mother.'], [/爸爸/, 'This is my father.'], [/奶奶|外婆|姥姥/, 'This is my grandma.'], [/你好/, 'Hello!'], [/谢谢/, 'Thank you!'], [/再见/, 'Goodbye!'], [/名字|叫/, 'My name is ...'], [/岁/, "I'm ... years old."],
+    [/喜欢/, 'I like ...'], [/饿/, "I'm hungry."], [/渴/, "I'm thirsty."], [/累|困/, "I'm tired."], [/开心|高兴/, "I'm happy."], [/难过|伤心/, "I'm sad."], [/天气|晴|下雨/, "It's sunny today."], [/学校|上学/, 'I go to school.'],
+    [/英语/, 'I like English.'], [/数学/, 'I like math.'], [/足球/, 'I like playing football.'], [/篮球/, 'I like playing basketball.'], [/游泳/, 'I can swim.'], [/画/, 'I like drawing.'], [/唱歌/, 'I like singing.'], [/生日/, 'My birthday is in ...'],
+    [/不会|不知道|不懂/, "Sorry, I don't know."], [/怎么说/, 'How do you say ... in English?'], [/上厕所/, 'May I go to the toilet?']];
+
+  function freeReply(raw) {
+    var t = norm(raw).trim(), m;
+    var f;
+    if ((m = t.match(/how do you say (.+?) in english/))) return { en: "Good question! Try typing the Chinese word, and I'll give you a sentence to try.", zh: '好问题！打出中文词，我给你一个英文句子试试。' };
+    if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(t)) { f = follow(); return { en: "Hello! It's great to see you. " + f[0], zh: '你好！见到你真高兴。' + f[1] }; }
+    if (/what('s| is) your name|who are you/.test(t)) return { en: "I'm Miss Sunny, your English buddy! What's your name?", zh: '我是 Sunny 老师，你的英语小伙伴！你叫什么名字？' };
+    if ((m = t.match(/(?:my name is|my name's|call me)\s+([a-z]+)/))) return { en: 'Nice to meet you, ' + cap(m[1]) + '! How old are you?', zh: '很高兴认识你！你几岁了？' };
+    if (/how old are you/.test(t)) return { en: "I'm as old as the sun! Just kidding. I'm a teacher robot. How old are you?", zh: '我和太阳一样老！开玩笑的，我是机器人老师。你几岁？' };
+    if ((m = t.match(R(/@NUM\s*years?\s*old/)))) return { en: 'You are ' + m[1] + ' years old! When is your birthday?', zh: '你' + (NUMVAL[m[1]] || m[1]) + '岁啦！你的生日是什么时候？' };
+    if (/how are you/.test(t)) return { en: "I'm sunny and happy, thank you! How are you?", zh: '我很开心，谢谢！你呢？' };
+    if (/where are you from|where do you live/.test(t)) return { en: 'I live in the sky, next to the clouds! Where are you from?', zh: '我住在天上，在云朵旁边！你来自哪里？' };
+    if (/\b(i am|i'm|im|i feel)\b.*\b(fine|good|great|happy|ok|okay|excited|well)\b/.test(t)) { f = follow(); return { en: "Yay! I'm happy too. " + f[0], zh: '太好了！我也很开心。' + f[1] }; }
+    if (/\b(sad|tired|not good|bad|scared|angry|lonely|upset|worried|sick)\b/.test(t)) return { en: "Oh, I'm sorry you feel that way. It's OK. You can talk to your teacher or your family, too. Would you like to hear a joke?", zh: '哦，抱歉你有这样的感觉。没关系，也可以告诉老师或家人。想听个笑话吗？' };
+    if (/\bhungry\b/.test(t)) return { en: 'Me too! What would you like to eat?', zh: '我也是！你想吃什么？' };
+    if (/\bthirsty\b/.test(t)) return { en: 'Have some water! Water is the best drink.', zh: '喝点水吧！水是最好的饮料。' };
+    if (/joke|funny|make me laugh/.test(t) || t === 'yes' && lastWasJoke) { var j = pick(JOKES); lastWasJoke = false; return { en: j[0] + ' Ha ha!', zh: j[1] }; }
+    if ((m = t.match(/do you like (.+)/))) return { en: 'Yes, I like ' + m[1].replace(/ ?\?$/, '') + '! Do you like it too?', zh: '是的，我喜欢！你也喜欢吗？' };
+    if ((m = t.match(/(?:what's|what is) your (?:favorite|favourite) (\w+)/))) {
+      var fav = { color: 'yellow, like the sun', food: 'noodles', animal: 'the panda', subject: 'English, of course', season: 'summer, because it is sunny', sport: 'ping-pong', fruit: 'mangoes', book: 'picture books', song: 'the ABC song', number: 'seven' }[m[1]] || 'a secret';
+      return { en: 'My favorite ' + m[1] + ' is ' + fav + '! What about you?', zh: '我最喜欢的是……你呢？' };
+    }
+    if (/can you (sing|dance|swim|fly|run|draw)/.test(t)) return { en: "I can sing a little! La la la. I can't swim, because I'm the sun! What can you do?", zh: '我会唱一点歌！我不会游泳，因为我是太阳！你会做什么？' };
+    if ((m = t.match(/\bi can (\w+(?: \w+)?)/)) && !/can't|cannot/.test(t)) return { en: 'Wow, you can ' + m[1] + '! That is cool. Can you teach me?', zh: '哇，你会！真酷。可以教我吗？' };
+    if (/i love you|you are (nice|cool|great|the best)/.test(t)) return { en: 'Aww, thank you! You are a great English learner!', zh: '谢谢你！你是很棒的英语学习者！' };
+    if ((m = t.match(R(/@FOOD/)))) return { en: cap(m[1]) + '? Yummy! I like ' + m[1] + ' too. What do you eat for breakfast?', zh: '好吃！我也喜欢。你早餐吃什么？' };
+    if ((m = t.match(R(/@ANIMAL/)))) return { en: cap(m[1]) + '! So cute. What can it do?', zh: '好可爱！它会做什么？' };
+    if ((m = t.match(R(/@SPORT/)))) return { en: cap(m[1]) + ' is so much fun! How often do you play?', zh: '太好玩了！你多久玩一次？' };
+    if ((m = t.match(R(/@SUBJECT/)))) return { en: cap(m[1]) + ' is a great subject! Who is your ' + m[1] + ' teacher?', zh: '这门课很棒！谁是你的老师？' };
+    if ((m = t.match(R(/@WEATHER/)))) return { en: cap(m[1]) + ' today? Thanks for telling me! What do you wear today?', zh: '谢谢你告诉我！你今天穿什么？' };
+    if ((m = t.match(R(/@SEASON/)))) return { en: cap(m[1]) + ' is lovely! What do you do in ' + m[1] + '?', zh: '这个季节真好！你在这个季节做什么？' };
+    if ((m = t.match(R(/@COLOR/)))) return { en: cap(m[1]) + ' is a beautiful color! What is ' + m[1] + '? An apple? The sky?', zh: '真漂亮的颜色！什么东西是这个颜色的？' };
+    if ((m = t.match(R(/@FAMILY/))) && m[1] !== 'me') return { en: 'Your ' + m[1] + ' sounds nice! What does your ' + m[1] + ' like?', zh: '听起来很好！他/她喜欢什么？' };
+    if ((m = t.match(R(/@MONTH/)))) return { en: cap(m[1]) + '! What a nice time. Is your birthday in ' + cap(m[1]) + '?', zh: '那是你的生日月份吗？' };
+    if ((m = t.match(/\bi (?:like|love|enjoy)\s+(.+)/))) return { en: 'You like ' + m[1] + '? Me too! Why do you like it?', zh: '我也喜欢！你为什么喜欢它？' };
+    if ((m = t.match(/\bi have (?:a |an )?(.+)/))) return { en: 'You have ' + (/^[aeiou]/.test(m[1]) ? 'an ' : 'a ') + m[1] + '? Cool! Tell me more.', zh: '真酷！再多告诉我一点吧。' };
+    if (/\b(thank|thanks)\b/.test(t)) { f = follow(); return { en: "You're welcome! " + f[0], zh: '不客气！' + f[1] }; }
+    if (/\b(bye|goodbye|see you|good night)\b/.test(t)) return { en: 'Goodbye! See you next time. Keep speaking English!', zh: '再见！下次见，继续说英语哦！' };
+    if (/^(yes|yeah|yep|sure|ok|okay)$/.test(t)) { f = follow(); return { en: 'Great! ' + f[0], zh: '太好了！' + f[1] }; }
+    if (/^(no|nope)$/.test(t)) { f = follow(); return { en: "That's OK! " + f[0], zh: '没关系！' + f[1] }; }
+    if (/\?$/.test(String(raw).trim()) || /^(what|who|where|when|why|how|can|do|does|is|are)\b/.test(t)) { f = follow(); return { en: "Hmm, that's a good question! I'm still learning that one. Can I ask you something? " + f[0], zh: '好问题！这个我还在学。我可以问你一个问题吗？' + f[1] }; }
+    if (t.split(' ').length === 1) return { en: 'Good word! Can you make a sentence with it? Try "I like ' + t + '."', zh: '很好的单词！能用它说一个句子吗？' };
+    f = follow();
+    return { en: 'Nice try! I don\'t know that one yet. ' + f[0], zh: '说得不错！这句话我还不会。' + f[1] };
+  }
+  var lastWasJoke = false;
+
+  /* ================= words ================= */
+  var CATS = [
+    ['animals', 'Animals 动物', [['🐶', 'dog', '狗', 'The dog can run fast.'], ['🐱', 'cat', '猫', 'My cat likes fish.'], ['🐼', 'panda', '熊猫', 'The panda eats bamboo.'], ['🐰', 'rabbit', '兔子', 'The rabbit has long ears.'], ['🐘', 'elephant', '大象', 'The elephant is very big.'], ['🐵', 'monkey', '猴子', 'The monkey can climb trees.'], ['🐯', 'tiger', '老虎', 'The tiger is strong.'], ['🐦', 'bird', '鸟', 'The bird can fly.']]],
+    ['food', 'Food 食物', [['🍎', 'apple', '苹果', 'I eat an apple every day.'], ['🍌', 'banana', '香蕉', 'Bananas are yellow.'], ['🥛', 'milk', '牛奶', 'I drink milk for breakfast.'], ['🍞', 'bread', '面包', 'I like bread with jam.'], ['🥟', 'dumplings', '饺子', 'We eat dumplings at Spring Festival.'], ['🍜', 'noodles', '面条', 'These noodles are delicious.'], ['🥚', 'egg', '鸡蛋', 'I have an egg for breakfast.'], ['🍉', 'watermelon', '西瓜', 'Watermelon is sweet in summer.']]],
+    ['colors', 'Colors 颜色', [['🟥', 'red', '红色', 'The apple is red.'], ['🟦', 'blue', '蓝色', 'The sky is blue.'], ['🟩', 'green', '绿色', 'The grass is green.'], ['🟨', 'yellow', '黄色', 'The sun is yellow.'], ['⬛', 'black', '黑色', 'My cat is black.'], ['⬜', 'white', '白色', 'Snow is white.'], ['🟪', 'purple', '紫色', 'Grapes are purple.'], ['🟧', 'orange', '橙色', 'My bag is orange.']]],
+    ['school', 'School 学校', [['📚', 'book', '书', 'Open your book, please.'], ['✏️', 'pencil', '铅笔', 'I write with a pencil.'], ['📏', 'ruler', '尺子', 'May I use your ruler?'], ['🎒', 'schoolbag', '书包', 'My schoolbag is heavy.'], ['🧑‍🏫', 'teacher', '老师', 'Our teacher is kind.'], ['🧒', 'student', '学生', 'I am a student.'], ['🏫', 'school', '学校', 'I go to school by bus.'], ['🖍️', 'crayon', '蜡笔', 'I draw with crayons.']]],
+    ['family', 'Family 家人', [['👩', 'mother', '妈妈', 'My mother is a doctor.'], ['👨', 'father', '爸爸', 'My father likes cooking.'], ['👧', 'sister', '姐姐 / 妹妹', 'My sister is ten.'], ['👦', 'brother', '哥哥 / 弟弟', 'My brother plays football.'], ['👵', 'grandma', '奶奶 / 外婆', 'Grandma tells me stories.'], ['👴', 'grandpa', '爷爷 / 外公', 'Grandpa reads the newspaper.'], ['👶', 'baby', '宝宝', 'The baby is sleeping.'], ['🏠', 'family', '家庭', 'I love my family.']]],
+    ['weather', 'Weather 天气', [['☀️', 'sunny', '晴朗的', "It's sunny today."], ['🌧️', 'rainy', '下雨的', "Take an umbrella. It's rainy."], ['☁️', 'cloudy', '多云的', "It's cloudy this morning."], ['🌬️', 'windy', '有风的', "It's windy. Let's fly a kite."], ['❄️', 'snowy', '下雪的', "It's snowy in winter."], ['🔥', 'hot', '热的', 'Summer is hot.'], ['🧊', 'cold', '冷的', "It's cold. Put on your coat."], ['🌈', 'rainbow', '彩虹', 'Look! A rainbow!']]],
+    ['actions', 'Actions 动作', [['🏃', 'run', '跑', 'I can run fast.'], ['🏊', 'swim', '游泳', 'I swim in summer.'], ['💃', 'dance', '跳舞', "Let's dance together."], ['🎤', 'sing', '唱歌', 'She likes to sing.'], ['📖', 'read', '读', 'I read before bed.'], ['✍️', 'write', '写', 'Write your name here.'], ['🦘', 'jump', '跳', 'Jump high!'], ['🎨', 'draw', '画画', 'I like to draw animals.']]],
+    ['body', 'Body 身体', [['👀', 'eyes', '眼睛', 'I have two eyes.'], ['👂', 'ears', '耳朵', 'Rabbits have long ears.'], ['👃', 'nose', '鼻子', 'Touch your nose.'], ['👄', 'mouth', '嘴巴', 'Open your mouth.'], ['✋', 'hand', '手', 'Raise your hand.'], ['🦶', 'foot', '脚', 'I kick the ball with my foot.'], ['🦷', 'teeth', '牙齿', 'Brush your teeth.'], ['💪', 'arm', '手臂', 'Wave your arm.']]]
+  ];
+  var ALLWORDS = []; CATS.forEach(function (c) { c[2].forEach(function (w) { ALLWORDS.push({ cat: c[0], emo: w[0], en: w[1], zh: w[2], ex: w[3], key: c[0] + ':' + w[1] }); }); });
+
+  /* ================= storage (this device only) ================= */
+  var KEY = 'missSunny.v2';
+  var store = { stars: {}, known: {}, said: 0, best: [], fixes: [], profile: {} };
+  try { var saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved && typeof saved === 'object') { for (var k in store) if (saved[k] != null) store[k] = saved[k]; } } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+
+  /* ================= smart chat brain: memory, spelling help, context, games ================= */
+  if (!store.profile || typeof store.profile !== 'object') store.profile = {};
+  var P = store.profile;
+  if (!Array.isArray(P.likes)) P.likes = [];
+  if (!Array.isArray(P.dislikes)) P.dislikes = [];
+  var conv = { lastQ: null, asked: {}, game: null, turn: 0, aboutX: null, lastCb: 0, usedCb: {}, played: {}, qTries: 0 };
+  conv.prevFacts = { pet: P.pet, food: P.food, animal: P.animal, dream: P.dream, likes: P.likes[0] || '' };
+
+  // ---- spelling help ----
+  var DICT_WORDS = ("i you he she it we they me my your his her our their its a an the is am are was were be been do does did can could will would should may must "
+    + "i'm you're he's she's it's we're they're i've i'll i'd don't doesn't didn't can't won't isn't aren't wasn't what's that's there's let's "
+    + "like likes liked love loves loved have has had go goes went gone to too and or but so because if then with in on at for of from by about into up down out over under near "
+    + "this that these those what who where when why how which yes no not very really also please thank thanks hello hi hey bye goodbye good great nice fine ok okay happy sad tired "
+    + "today tomorrow yesterday every day days week weekend weekends morning afternoon evening night time times school home play plays played want wants wanted eat eats ate drink drinks "
+    + "see saw look looks come came get got make made read reads write wrote sing sang dance danced run ran swim swam jump jumped fly draw drew help know knew think thought say said "
+    + "tell told ask asked live lives work works study learn favorite favourite color colour name old years year there here some any many much more most little big small long short "
+    + "tall new all one two three four five six seven eight nine ten eleven twelve twenty hundred first last next again always usually often sometimes never just only well me us them him "
+    + "friend friends teacher student class classes lesson game games book books sun moon star story stories joke jokes song songs guess riddle english chinese math science music art "
+    + "sport sports pet pets animal animals food fruit family mom mum dad mother father brother brothers sister sisters grandma grandpa baby cat cats dog dogs panda pandas rabbit rabbits "
+    + "bird birds fish tiger tigers lion lions monkey monkeys elephant elephants horse pig cow duck giraffe penguin dolphin bear zebra kangaroo dinosaur hamster turtle "
+    + "apple apples banana bananas orange oranges grape grapes pear peach strawberry strawberries watermelon mango milk bread egg eggs rice noodles dumplings cake cookies candy chocolate "
+    + "pizza hamburger juice water tea vegetables carrot carrots tomato potato corn red blue green yellow black white pink purple brown grey gray spring summer autumn fall winter "
+    + "sunny rainy cloudy windy snowy hot cold warm cool weather football basketball soccer tennis badminton volleyball swimming running skating reading drawing singing dancing painting "
+    + "cooking piano guitar doctor nurse driver farmer cook police scientist artist singer pilot engineer park zoo beach movie movies tv computer phone toy toys ball bike bus car train "
+    + "walk foot breakfast lunch dinner bed sleep birthday party gift present spell mean means plus minus robot real true yeah yep nope sure maybe beautiful delicious interesting "
+    + "funny cute smart clever kind because grow when want be become teach thing things everything something nothing").split(' ');
+  var KNOWN = {};
+  DICT_WORDS.forEach(function (w) { KNOWN[w] = 1; });
+  ALLWORDS.forEach(function (w) { KNOWN[w.en] = 1; });
+  var VOCAB = Object.keys(KNOWN).filter(function (w) { return w.length >= 3 && !/'/.test(w); });
+  var MISSPELL = { freind: 'friend', frend: 'friend', freinds: 'friends', becuase: 'because', becase: 'because', beacuse: 'because', becouse: 'because', becoz: 'because', cuz: 'because', coz: 'because',
+    favrite: 'favorite', favorit: 'favorite', faverite: 'favorite', favourit: 'favorite', beautifull: 'beautiful', beatiful: 'beautiful', butiful: 'beautiful', delicous: 'delicious', delicius: 'delicious',
+    wanna: 'want to', gonna: 'going to', u: 'you', ur: 'your', r: 'are', pls: 'please', plz: 'please', thx: 'thanks', tnx: 'thanks', im: "I'm", dont: "don't", cant: "can't", doesnt: "doesn't",
+    didnt: "didn't", isnt: "isn't", whats: "what's", thats: "that's", ive: "I've", youre: "you're", wat: 'what', wht: 'what', skool: 'school', scool: 'school', techer: 'teacher', teecher: 'teacher',
+    bananna: 'banana', banan: 'banana', aple: 'apple', appel: 'apple', englsh: 'English', inglish: 'English', chiness: 'Chinese', basketbal: 'basketball', footbal: 'football', choclate: 'chocolate',
+    chocolat: 'chocolate', panada: 'panda', elefant: 'elephant', elphant: 'elephant', monky: 'monkey', tigar: 'tiger', rabit: 'rabbit', brither: 'brother', sistor: 'sister', mather: 'mother',
+    fater: 'father', helo: 'hello', hellow: 'hello', hapy: 'happy', happey: 'happy', sory: 'sorry', wether: 'weather', wheather: 'weather', piza: 'pizza', hamberger: 'hamburger', dumpling: 'dumplings',
+    noodel: 'noodles', noodels: 'noodles', swiming: 'swimming', runing: 'running', danceing: 'dancing', writeing: 'writing', tommorow: 'tomorrow', tomorow: 'tomorrow', yesturday: 'yesterday' };
+  function lev(a, b) {
+    var m = a.length, n = b.length, d = [], i, j;
+    for (i = 0; i <= m; i++) d.push([i]);
+    for (j = 1; j <= n; j++) d[0].push(j);
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1));
+    return d[m][n];
+  }
+  function spellFix(raw, skip) {
+    var fixes = [];
+    if (skip) return { text: raw, fixes: fixes };
+    var out = String(raw).replace(/[A-Za-z']+/g, function (w, off) {
+      var lw = w.toLowerCase();
+      var before = String(raw).slice(0, off).toLowerCase();
+      if (/(name is|name's|called|call me|named)\s*$/.test(before)) return w;
+      if (off > 0 && /^[A-Z]/.test(w) && !MISSPELL[lw]) return w;
+      if (MISSPELL[lw]) { fixes.push([w, MISSPELL[lw]]); return MISSPELL[lw]; }
+      if (KNOWN[lw] || lw.length < 4 || /'/.test(lw)) return w;
+      var maxd = lw.length >= 7 ? 2 : 1, best = null, bd = 9;
+      for (var i = 0; i < VOCAB.length; i++) {
+        var v = VOCAB[i];
+        if (v.charAt(0) !== lw.charAt(0) || Math.abs(v.length - lw.length) > maxd) continue;
+        var dd = lev(lw, v);
+        if (dd < bd) { bd = dd; best = v; }
+      }
+      if (best && bd <= maxd) { fixes.push([w, best]); return best; }
+      return w;
+    });
+    return { text: out, fixes: fixes };
+  }
+
+  // ---- what Miss Sunny can ask, and in what order ----
+  var Q = {
+    name: { en: "What's your name?", zh: '你叫什么名字？', sug: ['My name is Lily.', "I'm Tom."], full: 'My name is {V}.' },
+    feeling: { en: 'How are you today?', zh: '你今天好吗？', sug: ["I'm happy!", "I'm a little tired."] },
+    age: { en: 'How old are you?', zh: '你几岁了？', sug: ["I'm nine years old.", "I'm ten."], full: "I'm {v} years old." },
+    from: { en: 'Where are you from?', zh: '你来自哪里？', sug: ["I'm from Qingdao.", "I'm from China."], full: "I'm from {T}." },
+    food: { en: "What's your favorite food?", zh: '你最喜欢什么食物？', sug: ['My favorite food is dumplings.', 'I like noodles.'], full: 'My favorite food is {v}.' },
+    animal: { en: "What's your favorite animal?", zh: '你最喜欢什么动物？', sug: ['I like pandas.', 'My favorite animal is the tiger.'], full: 'My favorite animal is the {v}.' },
+    pet: { en: 'Do you have a pet?', zh: '你有宠物吗？', sug: ['Yes, I have a cat.', "No, I don't."] },
+    petName: { en: "What's your pet's name?", zh: '你的宠物叫什么名字？', sug: ['Its name is Mimi.', "It's Bobo."], need: 'pet', full: 'Its name is {V}.' },
+    color: { en: "What's your favorite color?", zh: '你最喜欢什么颜色？', sug: ['I like blue.', 'My favorite color is pink.'], full: 'My favorite color is {v}.' },
+    sport: { en: 'What sport do you like?', zh: '你喜欢什么运动？', sug: ['I like playing basketball.', 'I like swimming.'], full: 'I like {v}.' },
+    subject: { en: "What's your favorite subject at school?", zh: '你最喜欢哪门课？', sug: ['My favorite subject is English.', 'I like art.'], full: 'My favorite subject is {V}.' },
+    sibling: { en: 'Do you have any brothers or sisters?', zh: '你有兄弟姐妹吗？', sug: ['Yes, I have a little brother.', "No, I don't."] },
+    weekend: { en: 'What do you like to do on weekends?', zh: '周末你喜欢做什么？', sug: ['I like to go to the park.', 'I play games with my friends.'] },
+    season: { en: "What's your favorite season?", zh: '你最喜欢哪个季节？', sug: ['I like summer.', 'My favorite season is winter.'], full: 'My favorite season is {v}.' },
+    dream: { en: 'What do you want to be when you grow up?', zh: '你长大想做什么？', sug: ['I want to be a doctor.', 'I want to be a teacher.'], full: 'I want to be {a} {v}.' },
+    breakfast: { en: 'What did you have for breakfast today?', zh: '你今天早餐吃了什么？', sug: ['I had milk and bread.', 'I had noodles.'], full: 'I had {v} for breakfast.' }
+  };
+  var ORDER = ['name', 'feeling', 'age', 'food', 'animal', 'pet', 'petName', 'from', 'color', 'sport', 'subject', 'sibling', 'weekend', 'season', 'dream', 'breakfast'];
+  var NEXT_OF = { name: 'feeling', feeling: 'age', age: 'food', food: 'breakfast', breakfast: 'animal', animal: 'pet', pet: 'petName', petName: 'color', color: 'season', season: 'sport', sport: 'weekend', weekend: 'subject', subject: 'dream', dream: 'sibling', from: 'food' };
+  var SLOT_RE = { food: '@FOOD', animal: '@ANIMAL', color: '@COLOR', sport: '@SPORT', subject: '@SUBJECT', season: '@SEASON' };
+  var SLOT_LABEL = { food: 'favorite food', animal: 'favorite animal', color: 'favorite color', sport: 'favorite sport', subject: 'favorite subject', season: 'favorite season' };
+  function has(k) { return P[k] != null && P[k] !== ''; }
+  function rememberSave() {
+    conv.factTurn = conv.factTurn || {};
+    var cur2 = { pet: P.pet, food: P.food, animal: P.animal, dream: P.dream, likes: P.likes[0] || '' };
+    conv.prevFacts = conv.prevFacts || {};
+    for (var k in cur2) if (conv.prevFacts[k] !== cur2[k]) conv.factTurn[k] = conv.turn;
+    conv.prevFacts = cur2;
+    try { save(); } catch (e) {} renderMemory();
+  }
+  function singular(w) { w = String(w); var irr = { mice: 'mouse', fish: 'fish', sheep: 'sheep', puppies: 'puppy', bunnies: 'bunny', butterflies: 'butterfly', wolves: 'wolf', foxes: 'fox', peaches: 'peach', mangoes: 'mango', tomatoes: 'tomato', potatoes: 'potato', cherries: 'cherry', strawberries: 'strawberry', sandwiches: 'sandwich' }; if (irr[w]) return irr[w]; if (/[^s]s$/.test(w) && w.length > 3) return w.slice(0, -1); return w; }
+  function aan(w) { return /^[aeiou]/i.test(w) ? 'an' : 'a'; }
+  function full(k, v) { var q = Q[k]; if (!q || !q.full) return null; return q.full.replace('{V}', cap(v)).replace('{T}', title(v)).replace('{a}', aan(v)).replace('{v}', v); }
+  function nextQ(prefer) {
+    function ok(k) { var q = Q[k]; return q && !conv.asked[k] && !has(k) && (!q.need || (has(q.need) && P[q.need] !== 'none')); }
+    if (prefer && ok(prefer)) return prefer;
+    for (var i = 0; i < ORDER.length; i++) if (ok(ORDER[i])) return ORDER[i];
+    return null;
+  }
+  function callbackLine() {
+    if (conv.turn - conv.lastCb < 4 || conv.turn < 4) return null;
+    var c = [];
+    if (has('pet') && P.pet !== 'none' && !conv.usedCb.pet) c.push(['pet', 'Say hi to ' + (P.petName || 'your ' + P.pet) + ' for me!', '替我向' + (P.petName || '你的宠物') + '问好！']);
+    if (has('food') && !conv.usedCb.food) c.push(['food', 'I still remember your favorite food is ' + P.food + '. Yum!', '我还记得你最喜欢吃 ' + P.food + '！']);
+    if (has('animal') && !conv.usedCb.animal) c.push(['animal', 'I remember you love ' + plural(singular(P.animal)) + '!', '我记得你喜欢这种动物！']);
+    if (has('dream') && !conv.usedCb.dream) c.push(['dream', 'Future ' + P.dream + ', keep going!', '未来的' + P.dream + '，加油！']);
+    if (P.likes.length && !conv.usedCb.likes) c.push(['likes', 'You told me you like ' + P.likes[0] + '. That is so cool.', '你告诉过我你喜欢 ' + P.likes[0] + '，真酷。']);
+    var ft = conv.factTurn || {};
+    c = c.filter(function (x) { return conv.turn - (ft[x[0]] || 0) >= 3; });
+    if (!c.length) return null;
+    var x = pick(c); conv.usedCb[x[0]] = 1; conv.lastCb = conv.turn;
+    return x;
+  }
+  // r = Sunny's reaction; then a memory callback (sometimes) and the next question
+  function withQ(en, zh, prefer, extra) {
+    var r = { en: cap(en), zh: zh || '' };
+    if (extra) for (var k0 in extra) r[k0] = extra[k0];
+    var cb = callbackLine();
+    if (cb) { r.en += ' ' + cb[1]; r.zh += ' ' + cb[2]; }
+    var k = nextQ(prefer);
+    if (k) { conv.asked[k] = 1; conv.lastQ = k; conv.qTries = 0; r.en += ' ' + Q[k].en; r.zh += ' ' + Q[k].zh; r.sug = Q[k].sug; }
+    else {
+      var OFF = [['game', 'Do you want to play a guessing game?', '想玩猜谜游戏吗？'], ['story', 'Do you want to hear a short story?', '想听一个小故事吗？'], ['riddle', 'Do you want to try a riddle?', '想猜个谜语吗？'], ['joke', 'Do you want to hear a joke?', '想听个笑话吗？']];
+      conv.offered = conv.offered || {};
+      var o = OFF.filter(function (x) { return !conv.offered[x[0]]; })[0];
+      if (o) { conv.offered[o[0]] = 1; conv.lastQ = 'offer:' + o[0]; r.en += ' ' + o[1]; r.zh += ' ' + o[2]; r.sug = ['Yes!', 'No, thanks.']; }
+      else { conv.lastQ = null; r.en += ' What do you want to talk about next?'; r.zh += ' 接下来想聊什么？'; r.sug = ["Let's play a game!", 'Tell me a story.', 'What can you do?']; }
+    }
+    return r;
+  }
+  function only(en, zh, sug, lastQ) { conv.lastQ = lastQ || null; return { en: en, zh: zh || '', sug: sug }; }
+
+  var YES = /^(yes|yeah|yep|yup|sure|of course|ok|okay|i do|i did|i have|i can|why not|let's go|lets go|yes please)\b/;
+  var NO = /^(no|nope|not really|i don't|i dont|i didn't|i haven't|i can't|no thanks|no thank you|never)\b/;
+  function plainPhrase(t) { return !/\b(i|you|me|like|love|am|is|are|was|my|don't|dont|want|have|can|because|went|go)\b/.test(t); }
+  var STOP_NAME = /^(yes|no|ok|okay|hello|hi|hey|fine|good|thanks|thank|thank you|what|why|how|i|me|you|the|a|it|is|my|name|bye|goodbye|sorry|help|stop|nothing|none|yeah|nope)$/;
+
+  // ---- short answers, read against the last question Sunny asked ----
+  function answerLast(t) {
+    var k = conv.lastQ, m, v, short = t.split(' ').length <= 2;
+    if (!k) return null;
+    if (/don't know|dont know|not sure|\bidk\b|no idea/.test(t)) return null;
+    if (k.indexOf('offer:') === 0) {
+      if (YES.test(t)) { var what = k.slice(6); return what === 'game' ? startGuess() : what === 'story' ? startQA(STORIES, 's') : what === 'riddle' ? startQA(RIDDLES, 'r') : tellJoke(); }
+      if (NO.test(t)) return withQ('OK, no problem!', '好的，没问题！');
+      return null;
+    }
+    if (k === 'game' || k === 'again') { if (YES.test(t)) return startGuess(); if (NO.test(t)) return withQ("OK! Let's keep talking.", '好的，我们继续聊！'); return null; }
+    if (k === 'joke') { if (YES.test(t)) return tellJoke(); if (NO.test(t)) return withQ('OK!', '好的！'); return null; }
+    if (k === 'why') { conv.lastQ = null; return withQ(pick(['That is a great reason!', 'I see! Good reason.', 'Oh, I understand now. Thank you!']), '原来如此，好理由！'); }
+    if (k === 'likeBack') {
+      if (YES.test(t) || /\b(like|love)\b/.test(t)) { if (P.likes.indexOf(conv.aboutX) < 0) P.likes.unshift(conv.aboutX); P.likes = P.likes.slice(0, 8); rememberSave(); return withQ('Great! We both like ' + conv.aboutX + '. I will remember that.', '太好了！我们都喜欢。我会记住的。'); }
+      if (NO.test(t)) return withQ("That's OK. Everyone likes different things!", '没关系，每个人喜欢的东西都不一样！');
+      return null;
+    }
+    if (k === 'fun') { if (YES.test(t) || /\bfun\b/.test(t)) return withQ("I'm so glad you had fun!", '你玩得开心，我也很高兴！'); if (NO.test(t)) return withQ('Oh no. Maybe next time will be better!', '哦，下次会更好的！'); return null; }
+    if (k === 'petKind') { m = t.match(R(/@ANIMAL/)); if (m) { P.pet = singular(m[1]); rememberSave(); return withQ(cap(aan(P.pet)) + ' ' + P.pet + '! How cute.', '好可爱！', 'petName', { fix: short ? 'I have ' + aan(P.pet) + ' ' + P.pet + '.' : null }); } return null; }
+    if (k === 'sibKind') { m = t.match(/\b(little |big |younger |older |baby )?(brother|sister)s?\b/); if (m) { P.sibling = (m[1] || '') + m[2]; rememberSave(); return withQ('A ' + P.sibling + '! Do you play together? I bet you do.', '真好！'); } return null; }
+    if (k === 'name') {
+      m = t.match(/(?:my name is|my name's|name is|i am|i'm|call me|it's|its)\s+([a-z]+)/) || (short && plainPhrase(t) && t.match(/^([a-z]{2,12})$/));
+      if (m && !STOP_NAME.test(m[1])) {
+        v = cap(m[1]); var again = P.name && P.name !== v; P.name = v; rememberSave();
+        return withQ(again ? 'Oh, OK! I will call you ' + v + ' now.' : pick(['Nice to meet you, ' + v + '!', 'What a lovely name, ' + v + '!', 'Hi, ' + v + '! I will remember your name.']), '很高兴认识你！我会记住你的名字。', NEXT_OF.name, { fix: /name|i am|i'm/.test(t) ? null : 'My name is ' + v + '.' });
+      }
+      return null;
+    }
+    if (k === 'feeling') {
+      if ((m = t.match(/\b(fine|good|great|happy|ok|okay|well|excited|wonderful|super|awesome|very good|not bad)\b/))) { P.feeling = m[1]; return withQ(pick(["I'm glad to hear that!", 'Yay! Happy days are the best.', 'Great! Let us have fun today.']), '太好了！', NEXT_OF.feeling); }
+      if ((m = t.match(/\b(tired|sad|sleepy|sick|bad|hungry|bored|nervous|angry|scared|so so|not good|upset|worried)\b/))) { P.feeling = m[1]; return withQ("Oh, you feel " + m[1] + ". Thank you for telling me. It's OK to feel that way. You can also tell your family or teacher.", '谢谢你告诉我，有这种感觉没关系，也可以告诉家人或老师。', m[1] === 'bored' ? null : NEXT_OF.feeling); }
+      return null;
+    }
+    if (k === 'age') {
+      m = t.match(R(/@NUM/));
+      if (m) { v = m[1]; P.age = v; rememberSave(); return withQ(pick([v + ' years old! That is a great age.', 'Wow, ' + v + '! You are growing up fast.']), '真好！', NEXT_OF.age, { fix: /years old/.test(t) ? null : "I'm " + v + ' years old.' }); }
+      return null;
+    }
+    if (k === 'from') {
+      m = t.match(/(?:from|in|live in)\s+([a-z][a-z ]*)/) || (t.split(' ').length <= 3 && plainPhrase(t) && t.match(/^([a-z][a-z ]*)$/));
+      if (m) { v = m[1].replace(/\b(city|china)$/, function (x) { return x; }).trim(); P.from = v; rememberSave(); return withQ(pick([title(v) + '? Cool! I would love to visit.', title(v) + ' sounds like a lovely place!']), '听起来很棒！', NEXT_OF.from, { fix: /from/.test(t) ? null : full('from', v) }); }
+      return null;
+    }
+    if (SLOT_RE[k]) {
+      m = t.match(R(new RegExp(SLOT_RE[k])));
+      if (!m && t.split(' ').length <= 4) { var s = t.replace(/^(my (?:favorite|favourite) \w+ is|i like|i love|it's|it is|i think|maybe)\s*/, '').replace(/^(the|a|an)\s+/, ''); if (s && s.split(' ').length <= 2 && !STOP_NAME.test(s) && !/\b(i|you|me|my|it|is|am|are|was|not|no|yes)\b/.test(s)) m = [s, s]; }
+      if (m) {
+        v = k === 'animal' ? singular(m[1]) : m[1]; P[k] = v; rememberSave();
+        var react = {
+          food: [cap(v) + '! Yummy. I like ' + v + ' too.', 'Mmm, ' + v + '! Good choice.'],
+          animal: [cap(plural(v)) + ' are so cute!', 'I love ' + plural(v) + ' too!'],
+          color: [cap(v) + ' is a beautiful color!', 'Nice! ' + cap(v) + ' makes me happy.'],
+          sport: [cap(v) + ' is so much fun!', 'Wow, ' + v + '! You must be strong.'],
+          subject: [cap(v) + ' is a great subject!', 'Nice! I love ' + cap(v) + ' too.'],
+          season: [cap(v) + ' is lovely!', 'I like ' + v + ' too!']
+        }[k];
+        return withQ(pick(react), '真不错！', NEXT_OF[k], { fix: short && !/favorite|favourite/.test(t) ? full(k, v) : null });
+      }
+      return null;
+    }
+    if (k === 'pet') {
+      m = t.match(R(/@ANIMAL/));
+      if (m) { P.pet = singular(m[1]); rememberSave(); return withQ(cap(aan(P.pet)) + ' ' + P.pet + '! How cute.', '好可爱！', 'petName', { fix: short ? 'Yes, I have ' + aan(P.pet) + ' ' + P.pet + '.' : null }); }
+      if (NO.test(t)) { P.pet = 'none'; rememberSave(); return withQ("That's OK! Maybe one day.", '没关系，也许以后会有！', 'animal'); }
+      if (YES.test(t)) return only('Cool! What pet do you have?', '酷！你养了什么宠物？', ['A cat.', 'A dog.', 'A fish.'], 'petKind');
+      return null;
+    }
+    if (k === 'petName') {
+      m = t.match(/(?:name is|name's|it's|its|called|named)\s+([a-z]+)/) || (short && t.match(/^([a-z]{2,12})$/));
+      if (m && !STOP_NAME.test(m[1])) { P.petName = cap(m[1]); rememberSave(); return withQ(P.petName + '! What a cute name for ' + aan(P.pet) + ' ' + P.pet + '.', '好可爱的名字！', NEXT_OF.petName, { fix: short ? 'Its name is ' + P.petName + '.' : null }); }
+      return null;
+    }
+    if (k === 'sibling') {
+      m = t.match(/\b(little |big |younger |older |baby |twin )?(brother|sister)s?\b/);
+      if (m) { P.sibling = (m[1] || '') + m[2]; rememberSave(); return withQ('A ' + P.sibling + '! How nice.', '真好！', NEXT_OF.sibling); }
+      if (NO.test(t) || /only child/.test(t)) { P.sibling = 'none'; rememberSave(); return withQ("OK! Then you're special, the only child!", '好的，独生子女也很特别！', NEXT_OF.sibling); }
+      if (YES.test(t)) return only('Nice! A brother or a sister?', '真好！是兄弟还是姐妹？', ['A little brother.', 'A big sister.'], 'sibKind');
+      return null;
+    }
+    if (k === 'weekend') {
+      if ((t.split(' ').length >= 2 && !/^i (like|love) (you|it)/.test(t)) || R(/@HOBBY|@SPORT/).test(t)) { P.weekend = t.replace(/^(on weekends,? |i usually |i like to |i like |i )/, ''); rememberSave(); conv.lastQ = null; return withQ(pick(['That sounds fun!', 'What a happy weekend!', 'I want to do that too!']), '听起来很好玩！', NEXT_OF.weekend); }
+      return null;
+    }
+    if (k === 'dream') {
+      m = t.match(/(?:be|become)\s+(?:a |an )?([a-z ]+)/) || t.match(R(/@JOB/)) || (short && plainPhrase(t) && t.match(/^(?:a |an )?([a-z ]+)$/));
+      if (m) { v = m[1].trim(); P.dream = v; rememberSave(); return withQ(pick(['A ' + v + '? That is a wonderful dream! You can do it.', 'Wow, ' + aan(v) + ' ' + v + '! I believe in you.']), '好棒的梦想！你一定可以！', NEXT_OF.dream, { fix: /want to be/.test(t) ? null : full('dream', v) }); }
+      return null;
+    }
+    if (k === 'breakfast') {
+      m = t.match(R(/@FOOD|@DRINK/));
+      if (m) { m[1] = m[1] || m[2]; P.breakfast = m[1]; rememberSave(); return withQ(pick(['Yummy! Breakfast gives you energy.', 'Good breakfast! Now you are ready to learn.']), '早餐很重要！', NEXT_OF.breakfast, { fix: short ? full('breakfast', m[1]) : null }); }
+      if (/nothing|no breakfast|didn't eat|didnt eat/.test(t)) return withQ('Oh no! Breakfast is important. Try to eat something tomorrow, OK?', '早餐很重要哦，明天记得吃点东西！');
+      return null;
+    }
+    return null;
+  }
+
+  // ---- facts the child says without being asked ----
+  function learnStatements(t, silent) {
+    var m, v;
+    if ((m = t.match(/my name is ([a-z]+)/)) && !STOP_NAME.test(m[1])) { v = cap(m[1]); var old = P.name; P.name = v; rememberSave(); if (silent) return null; return withQ(old && old !== v ? 'Oh, your name is ' + v + '? OK, I will call you ' + v + '.' : 'Nice to meet you, ' + v + '!', '很高兴认识你！', 'feeling'); }
+    if ((m = t.match(R(/@NUM\s*years? old/)))) { P.age = m[1]; rememberSave(); if (silent) return null; return withQ('You are ' + m[1] + ' years old! Great.', '真好！', NEXT_OF.age); }
+    if ((m = t.match(/my (?:favorite|favourite) (food|animal|color|colour|sport|subject|season) is (?:the )?([a-z ]+)/))) {
+      var key = m[1] === 'colour' ? 'color' : m[1]; v = key === 'animal' ? singular(m[2].trim()) : m[2].trim(); var prev = P[key]; P[key] = v; rememberSave(); conv.asked[key] = 1;
+      if (silent) return null;
+      return withQ(prev && prev !== v ? 'Oh! Last time you said ' + prev + '. Now it is ' + v + '? Cool, I will remember.' : cap(v) + '! Great choice. I will remember that.', '好选择！我会记住的。', NEXT_OF[key]);
+    }
+    if ((m = t.match(R(/i have (?:a |an |two |some )?(?:pet )?@ANIMAL(?: (?:named|called) ([a-z]+))?/)))) {
+      P.pet = singular(m[1]); if (m[2]) P.petName = cap(m[2]); rememberSave(); conv.asked.pet = 1; if (silent) return null;
+      return withQ(cap(aan(P.pet)) + ' ' + P.pet + (P.petName ? ' called ' + P.petName : '') + '! How lovely.', '好可爱！', 'petName');
+    }
+    if ((m = t.match(/i have (?:a |an |one |two )?(little |big |younger |older |baby )?(brother|sister)s?/))) { P.sibling = (m[1] || '') + m[2]; rememberSave(); conv.asked.sibling = 1; if (silent) return null; return withQ('You have a ' + P.sibling + '! Is it fun?', '真好！', null); }
+    if ((m = t.match(/i (?:want to|wanna) (?:be|become) (?:a |an )?([a-z ]+)/))) { P.dream = m[1].trim(); rememberSave(); conv.asked.dream = 1; if (silent) return null; return withQ('A ' + P.dream + '? What a wonderful dream!', '好棒的梦想！', null); }
+    if ((m = t.match(/(?:i'm from|i am from|i come from|i live in) ([a-z][a-z ]*)/))) { P.from = m[1].trim(); rememberSave(); conv.asked.from = 1; if (silent) return null; return withQ(title(P.from) + '? How nice!', '真好！', null); }
+    if ((m = t.match(/i (?:don't|dont|do not) like ([a-z ]+)/))) {
+      v = m[1].trim(); if (P.dislikes.indexOf(v) < 0) P.dislikes.unshift(v); P.dislikes = P.dislikes.slice(0, 6);
+      var was = P.likes.indexOf(v); if (was > -1) P.likes.splice(was, 1); rememberSave(); if (silent) return null;
+      return withQ(was > -1 ? 'Really? You told me you like ' + v + ' before! Did you change your mind? That is OK.' : "That's OK. Everyone likes different things.", '没关系，每个人喜欢的不一样。', null);
+    }
+    if ((m = t.match(/i (?:really )?(?:like|love|enjoy) ([a-z ]+)/)) && !/^(to )?(you|it|that|this)$/.test(m[1].trim())) {
+      v = m[1].trim().replace(/^(to )/, '').replace(/ (very much|a lot|so much)$/, '');
+      var before = P.likes.indexOf(v) > -1;
+      if (!before) { P.likes.unshift(v); P.likes = P.likes.slice(0, 8); }
+      for (var sk in SLOT_RE) { var mm = v.match(R(new RegExp(SLOT_RE[sk]))); if (mm && !has(sk)) { P[sk] = sk === 'animal' ? singular(mm[1]) : mm[1]; conv.asked[sk] = 1; } }
+      rememberSave(); if (silent) return null;
+      if (before) return withQ('Yes! You told me before that you like ' + v + '. I remember!', '对！你之前说过你喜欢这个，我记得！', null);
+      if (Math.random() < 0.5) return only(pick(['Oh, you like ' + v + '! Me too.', 'Cool! ' + cap(v) + ' sounds great.']) + ' Why do you like ' + (v.split(' ').length > 3 ? 'it' : v) + '?', '你为什么喜欢它？', ['Because it is fun.', "Because it's yummy."], 'why');
+      return withQ(pick(['Oh, you like ' + v + '! Me too.', 'Cool! ' + cap(v) + ' sounds great.', 'Nice! I will remember that you like ' + v + '.']), '我会记住的！', null);
+    }
+    return null;
+  }
+
+  // ---- games, stories, riddles, jokes ----
+  var GUESS = [
+    { a: 'panda', zh: '熊猫', clues: ['It is black and white.', 'It lives in China.', 'It eats bamboo.'] },
+    { a: 'elephant', zh: '大象', clues: ['It is very big and grey.', 'It has big ears.', 'It has a very long nose.'] },
+    { a: 'monkey', zh: '猴子', clues: ['It can climb trees.', 'It has a long tail.', 'It loves bananas.'] },
+    { a: 'rabbit', zh: '兔子', clues: ['It is small and soft.', 'It has long ears.', 'It likes carrots and it can hop.'] },
+    { a: 'penguin', zh: '企鹅', clues: ['It is a bird, but it cannot fly.', 'It lives in a very cold place.', 'It is black and white and it swims.'] },
+    { a: 'giraffe', zh: '长颈鹿', clues: ['It is very, very tall.', 'It is yellow with brown spots.', 'It has a very long neck.'] }
+  ];
+  var STORIES = [
+    { en: 'Story time! Tom has a little dog. Its name is Max. One day, Max finds a red ball in the park. Tom and Max play with the ball all afternoon. Question: What color is the ball?', zh: '故事：汤姆有一只小狗叫麦克斯。有一天，麦克斯在公园找到一个红色的球……问题：球是什么颜色的？', a: ['red'], ans: 'The ball is red.' },
+    { en: 'Story time! Lily goes to the zoo with her grandma. She sees a tall giraffe and two funny monkeys. The monkeys eat bananas. Question: What do the monkeys eat?', zh: '故事：莉莉和奶奶去动物园，看到长颈鹿和两只有趣的猴子，猴子在吃香蕉。问题：猴子吃什么？', a: ['banana'], ans: 'They eat bananas.' },
+    { en: "Story time! It is a rainy day. Sam can't play outside, so he reads a book about the sea. He learns that whales are very big. Question: What does Sam read about?", zh: '故事：下雨天，山姆不能出去玩，就读了一本关于大海的书。问题：山姆读了关于什么的书？', a: ['sea', 'ocean', 'whale'], ans: 'He reads a book about the sea.' }
+  ];
+  var RIDDLES = [
+    { en: "Here's a riddle: What has hands but can't clap?", zh: '谜语：什么东西有“手”却不能拍手？', a: ['clock', 'watch'], ans: 'A clock!' },
+    { en: "Here's a riddle: What has legs but can't walk?", zh: '谜语：什么东西有腿却不能走路？', a: ['table', 'chair', 'desk', 'bed'], ans: 'A table!' },
+    { en: "Here's a riddle: I am yellow and long. Monkeys love me. What am I?", zh: '谜语：我又黄又长，猴子最爱我。我是什么？', a: ['banana'], ans: 'A banana!' },
+    { en: "Here's a riddle: What gets wetter the more it dries?", zh: '谜语：什么东西越擦越湿？', a: ['towel'], ans: 'A towel!' }
+  ];
+  function unplayed(list, key) { var left = list.filter(function (x, i) { return !conv.played[key + i]; }); if (!left.length) { list.forEach(function (x, i) { delete conv.played[key + i]; }); left = list; } var it = pick(left); conv.played[key + list.indexOf(it)] = 1; return it; }
+  function startGuess() {
+    var it = unplayed(GUESS, 'g'); conv.game = { type: 'guess', it: it, i: 0 }; conv.lastQ = null;
+    return { en: "Let's play! I'm thinking of an animal. Clue 1: " + it.clues[0] + ' What is it?', zh: '我们来玩！我在想一种动物。线索1：' + it.clues[0] + ' 它是什么？', sug: ['Is it a cat?', 'Give me a clue.', 'I give up.'] };
+  }
+  function startQA(list, key) { var it = unplayed(list, key); conv.game = { type: 'qa', it: it, tries: 0 }; conv.lastQ = null; return { en: it.en, zh: it.zh, sug: ['I don\'t know.'] }; }
+  function tellJoke() { var j = unplayed(JOKES, 'j'); conv.lastQ = 'joke'; return { en: j[0] + ' Ha ha! Do you want another joke?', zh: j[1] + ' 还想听吗？', sug: ['Yes!', 'No, thanks.'] }; }
+  function gameTurn(t) {
+    var g = conv.game, m;
+    if (/\b(stop|quit|end|no more|enough)\b/.test(t)) { conv.game = null; return withQ("OK, game over! That was fun.", '好的，游戏结束！真好玩。'); }
+    if (/\b(story|riddle|joke|game)\b/.test(t) && !(g.type === 'guess' && /game/.test(t) && /again/.test(t))) { conv.game = null; return null; }
+    var chatty = t.split(' ').length >= 4 && /^(i|my|we|what|how|do|can)\b/.test(t) && !/\b(is it|give up|clue|hint|don't know|dont know|think)\b/.test(t);
+    if (chatty && !R(/@ANIMAL/).test(t)) { conv.game = null; return null; }
+    if (g.type === 'guess') {
+      var it = g.it, re = new RegExp('\\b' + it.a + 's?\\b');
+      if (re.test(t)) { conv.game = null; P.wins = (P.wins || 0) + 1; rememberSave(); conv.lastQ = 'again'; return { en: "Yes! It's " + aan(it.a) + ' ' + it.a + '! ' + (P.name ? 'You are so smart, ' + P.name + '!' : 'You are so smart!') + ' Do you want to play again?', zh: '答对了！是' + it.zh + '！你真聪明！再玩一次吗？', sug: ['Yes!', 'No, thanks.'] }; }
+      var giveUp = /give up|i don't know|i dont know|tell me|idk/.test(t);
+      m = t.match(R(/@ANIMAL/));
+      if (giveUp) { conv.game = null; conv.lastQ = 'again'; return { en: "It's " + aan(it.a) + ' ' + it.a + '! Good try. Do you want to play again?', zh: '答案是' + it.zh + '！再玩一次吗？', sug: ['Yes!', 'No, thanks.'] }; }
+      if (!m && !/clue|hint|help|another/.test(t)) return { en: 'Try to guess an animal! You can say "Is it a cat?" Or ask me for another clue.', zh: '猜一种动物吧！可以说“Is it a cat?”，或者要下一个线索。', sug: ['Is it a dog?', 'Give me a clue.'] };
+      g.i++;
+      if (g.i < it.clues.length) return { en: (m ? 'Hmm, not ' + aan(singular(m[1])) + ' ' + singular(m[1]) + '. ' : '') + 'Clue ' + (g.i + 1) + ': ' + it.clues[g.i], zh: (m ? '不对哦。' : '') + '线索' + (g.i + 1) + '：' + it.clues[g.i], sug: ['Is it a ' + pick(['tiger', 'bear', 'horse', 'bird']) + '?', 'I give up.'] };
+      conv.game = null; conv.lastQ = 'again';
+      return { en: (m ? 'Not ' + aan(singular(m[1])) + ' ' + singular(m[1]) + '. ' : '') + "It's " + aan(it.a) + ' ' + it.a + '! Do you want to play again?', zh: '答案是' + it.zh + '！再玩一次吗？', sug: ['Yes!', 'No, thanks.'] };
+    }
+    if (g.type === 'qa') {
+      var right = g.it.a.some(function (a) { return new RegExp('\\b' + a).test(t); });
+      if (right) { conv.game = null; return withQ(pick(['Right! ', 'Correct! ', 'Yes! ']) + g.it.ans + (P.name ? ' Great job, ' + P.name + '!' : ' Great job!'), '答对了！'); }
+      g.tries++;
+      if (g.tries < 2 && !/i don't know|i dont know|give up|idk|tell me/.test(t)) return { en: 'Good try! Think again.', zh: '不错的尝试！再想想。', sug: ["I don't know."] };
+      conv.game = null; return withQ('The answer is: ' + g.it.ans, '答案是：' + g.it.ans);
+    }
+    return null;
+  }
+
+  // ---- things the child asks Miss Sunny ----
+  var EXTRA_EN_ZH = { school: '学校', teacher: '老师', friend: '朋友', happy: '开心的', sad: '难过的', water: '水', juice: '果汁', rice: '米饭', fish: '鱼', book: '书', pen: '钢笔', computer: '电脑', phone: '手机', car: '小汽车', bus: '公交车', bike: '自行车', tree: '树', flower: '花', sun: '太阳', moon: '月亮', star: '星星', beautiful: '美丽的', delicious: '好吃的', game: '游戏', story: '故事', music: '音乐', English: '英语', math: '数学', homework: '作业', breakfast: '早餐', lunch: '午餐', dinner: '晚餐', weekend: '周末', birthday: '生日', gift: '礼物', park: '公园', zoo: '动物园', beach: '海滩', snow: '雪', rain: '雨', wind: '风', hot: '热的', cold: '冷的', tall: '高的', short: '矮的/短的', big: '大的', small: '小的' };
+  var ZH2EN = {}; var EN2ZH = {};
+  ALLWORDS.forEach(function (w) { w.zh.split(/\s*\/\s*/).forEach(function (z) { ZH2EN[z] = w.en; }); EN2ZH[w.en] = w.zh; });
+  for (var ek in EXTRA_EN_ZH) { EN2ZH[ek.toLowerCase()] = EXTRA_EN_ZH[ek]; EXTRA_EN_ZH[ek].split('/').forEach(function (z) { ZH2EN[z.replace(/的$/, '')] = ek; ZH2EN[z] = ek; }); }
+  ['哥哥', '弟弟'].forEach(function (z) { ZH2EN[z] = 'brother'; }); ['姐姐', '妹妹'].forEach(function (z) { ZH2EN[z] = 'sister'; });
+  ZH2EN['奶奶'] = ZH2EN['外婆'] = ZH2EN['姥姥'] = 'grandma'; ZH2EN['爷爷'] = ZH2EN['外公'] = ZH2EN['姥爷'] = 'grandpa'; ZH2EN['你好'] = 'hello'; ZH2EN['谢谢'] = 'thank you'; ZH2EN['再见'] = 'goodbye';
+  function translateZh(raw) {
+    var s = raw.replace(/[？?。！!，,\s"“”']/g, '');
+    var m = s.match(/^(.+?)(用英语怎么说|英语怎么说|英文怎么说|用英文怎么说|的英文是什么|的英语是什么|英语是什么|英文是什么|的英文|的英语)$/) || raw.match(/what(?:'s| is) (.+?) in english/i) || raw.match(/how (?:do you|to) say (.+?) in english/i) || s.match(/^([一-鿿]{1,6})$/);
+    if (!m) return null;
+    var explicit = m.index != null && m[0].length > m[1].length;
+    var term = m[1].replace(/[a-zA-Z\s]/g, '');
+    var en = ZH2EN[term] || ZH2EN[term.replace(/的$/, '')];
+    if (!en && explicit) { var keys = Object.keys(ZH2EN).sort(function (a, b) { return b.length - a.length; }); for (var i = 0; i < keys.length; i++) if (term.indexOf(keys[i]) > -1) { en = ZH2EN[keys[i]]; term = keys[i]; break; } }
+    if (!en && !explicit) return null;
+    if (!en) return { en: "Hmm, I don't know that word yet. Can you try another word?", zh: '这个词我还不会，换一个试试？' };
+    var w = ALLWORDS.filter(function (x) { return x.en === en; })[0];
+    conv.lastQ = null;
+    return { en: term + ' in English is "' + en + '". Say it with me: ' + en + '!' + (w ? ' For example: ' + w.ex : ''), zh: term + ' 的英文是 ' + en + '，跟我读！', sug: [w ? w.ex : 'I like ' + en + '.'] };
+  }
+  function numval(s) { if (/^\d+$/.test(s)) return parseInt(s, 10); return NUMVAL[s] != null ? NUMVAL[s] : null; }
+  var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var FAV_SUNNY = { color: 'yellow, like the sun', food: 'noodles', animal: 'the panda', subject: 'English, of course', season: 'summer, because it is sunny', sport: 'ping-pong', fruit: 'mangoes', book: 'picture books', song: 'the ABC song', number: 'seven', day: 'Saturday', drink: 'orange juice', toy: 'my kite' };
+  function intents(t, raw) {
+    var m, nm = P.name ? ', ' + P.name : '';
+    if (/what'?s my name|what is my name|do you (know|remember) (me|my name)|who am i/.test(t) && !P.name && memoryFacts().length) return only('I remember some things! ' + memoryFacts().map(function (f) { return f[2]; }).join(' ') + " But you haven't told me your name. What's your name?", '我记得一些！但你还没告诉我名字。你叫什么？', Q.name.sug, 'name');
+    if (/what'?s my name|what is my name|do you (know|remember) (me|my name)|who am i/.test(t)) return P.name ? withQ('Of course! You are ' + P.name + '! I never forget a friend.', '当然记得！你是' + P.name + '！', null) : only("Hmm, you haven't told me yet! What's your name?", '你还没告诉我呢！你叫什么名字？', Q.name.sug, 'name');
+    if (/what do you (know|remember) about me|tell me about me|do you remember/.test(t)) { var facts = memoryFacts(); return facts.length ? withQ('I remember lots! ' + facts.map(function (f) { return f[2]; }).join(' '), '我记得很多！', null) : only("Not much yet! Tell me about you. What's your name?", '还不多呢！跟我说说你自己吧。你叫什么名字？', Q.name.sug, 'name'); }
+    if (/^(hi|hello|hey|good morning|good afternoon|good evening|morning)\b/.test(t) && !P.name) { conv.asked.name = 1; return only(pick(['Hello! It is great to see you.', 'Hi there! I am happy you are here.']) + " What's your name?", '你好！你叫什么名字？', Q.name.sug, 'name'); }
+    if (/^(hi|hello|hey|good morning|good afternoon|good evening|morning)\b/.test(t)) return withQ(P.name ? pick(['Hello again, ' + P.name + '! I missed you.', 'Hi, ' + P.name + '! Nice to see you again.']) : pick(['Hello! It is great to see you.', 'Hi there! I am happy you are here.']), '你好！', P.name ? null : 'name');
+    if (/what'?s your name|what is your name|who are you/.test(t)) return withQ("I'm Miss Sunny, your English buddy!", '我是 Sunny 老师，你的英语小伙伴！', 'name');
+    if (/how old are you/.test(t)) return withQ("I'm as old as the sun! Just kidding. I'm a teacher robot.", '我和太阳一样老！开玩笑的，我是机器人老师。', 'age');
+    if (/how are you|how do you do|how's it going/.test(t)) { conv.asked.feeling = 1; return only("I'm sunny and happy, thank you" + nm + '! How are you?', '我很开心，谢谢！你呢？', Q.feeling.sug, 'feeling'); }
+    if (/where are you from|where do you live/.test(t)) return withQ('I live in the sky, next to the clouds!', '我住在天上，在云朵旁边！', 'from');
+    if (/are you (a )?(robot|real|human|person|ai|computer|alive)/.test(t)) return withQ("I'm a computer teacher. I'm not a real person, but I listen carefully and I remember what you tell me!", '我是电脑老师，不是真人，但我会认真听，记住你说的话！', null);
+    if (/what can you do|^help$|what can i say|what should i say/.test(t)) return only('I can chat with you, remember things about you, play a guessing game, tell stories, riddles and jokes, spell words, do math, and tell you English words. What do you want to try?', '我会聊天、记住你、玩猜谜、讲故事和笑话、拼单词、算数、告诉你英文单词。你想试什么？', ["Let's play a game!", 'Tell me a story.', 'How do you spell apple?', 'What is 5 plus 3?'], null);
+    if (/what time is it|what's the time|what is the time/.test(t)) { var d = new Date(), mi = d.getMinutes(); return withQ("It's " + d.getHours() + ':' + (mi < 10 ? '0' : '') + mi + ' now.', '现在是 ' + d.getHours() + ':' + (mi < 10 ? '0' : '') + mi + '。', null); }
+    if (/what day is (it|today)|what's the date|what is the date|what is today/.test(t)) { var dd = new Date(); return withQ('Today is ' + DAYS[dd.getDay()] + ', ' + MONTHS[dd.getMonth()] + ' ' + dd.getDate() + '.', '今天是 ' + DAYS[dd.getDay()] + '。', null); }
+    if ((m = t.match(/(?:how (?:do you|to|can i) spell|spell) ([a-z]+)/))) { var w = m[1]; return withQ(cap(w) + ' is spelled ' + w.toUpperCase().split('').join('-') + '. ' + cap(w) + '!', w + ' 的拼写是 ' + w.toUpperCase().split('').join('-') + '。', null); }
+    if ((m = t.match(/what does ([a-z]+) mean|what is ([a-z]+) in chinese|what's ([a-z]+) in chinese/))) { var ww = m[1] || m[2] || m[3]; var z = EN2ZH[ww] || EN2ZH[singular(ww)]; return withQ(z ? '"' + ww + '" means ' + z + ' in Chinese.' : "Sorry, I don't know \"" + ww + '" yet. Can you ask your teacher?', z ? ww + ' 的意思是“' + z + '”。' : '这个词我还不知道，可以问问老师。', null); }
+    if ((m = t.match(new RegExp('\\b(\\d{1,4}|' + V.NUM + ')\\s*(plus|\\+|add|and|minus|-|take away|times|x|\\*|multiplied by|divided by|/)\\s*(\\d{1,4}|' + V.NUM + ')\\b'))) && /what|how much|is|equals|\+|plus|minus|times|divided/.test(t)) {
+      var a = numval(m[1]), b = numval(m[3]), op = m[2], res;
+      if (a != null && b != null) {
+        if (/plus|\+|add|and/.test(op)) res = a + b; else if (/minus|-|take/.test(op)) res = a - b; else if (/times|x|\*|multiplied/.test(op)) res = a * b; else res = b ? Math.round(a / b * 100) / 100 : null;
+        if (res != null) return only(a + ' ' + (/plus|\+|add|and/.test(op) ? 'plus' : /minus|-|take/.test(op) ? 'minus' : /times|x|\*|multiplied/.test(op) ? 'times' : 'divided by') + ' ' + b + ' is ' + res + '! Now you ask me one more, or say it in English: "' + a + ' plus ' + b + ' is ' + (a + b) + '."', a + ' 和 ' + b + ' 的答案是 ' + res + '！', ['What is 10 minus 4?', 'What is 6 times 7?'], null);
+      }
+    }
+    if (/story/.test(t)) return startQA(STORIES, 's');
+    if (/riddle/.test(t)) return startQA(RIDDLES, 'r');
+    if (/joke|make me laugh|something funny/.test(t)) return tellJoke();
+    if (/game|guess|play with me|let's play|lets play/.test(t)) return startGuess();
+    if (/sing|song/.test(t)) return withQ('OK! Twinkle, twinkle, little star, how I wonder what you are! Up above the world so high, like a diamond in the sky. La la la! Now you sing!', '好的！一闪一闪亮晶晶……现在你来唱！', null);
+    if (/i'?m bored|i am bored|boring/.test(t)) return only("Let's do something fun! Do you want a game, a story or a riddle?", '我们来做点好玩的！游戏、故事还是谜语？', ["Let's play a game!", 'Tell me a story.', 'Tell me a riddle.'], null);
+    if ((m = t.match(/(?:what's|what is) your (?:favorite|favourite) ([a-z]+)/))) {
+      var key = m[1] === 'colour' ? 'color' : m[1]; var fav = FAV_SUNNY[key] || 'a secret';
+      var mine = has(key) ? ' And I remember yours is ' + P[key] + '!' : '';
+      if (Q[key] && !has(key)) { conv.asked[key] = 1; return only('My favorite ' + key + ' is ' + fav + '! What about you?', '我最喜欢的是……你呢？', Q[key].sug, key); }
+      return withQ('My favorite ' + key + ' is ' + fav + '!' + mine, '我最喜欢的是……', null);
+    }
+    if ((m = t.match(/do you like ([a-z ]+)/))) {
+      var x = m[1].trim(); conv.aboutX = x;
+      var yesNo = P.dislikes.indexOf(x) > -1 ? ' I remember you don\'t like it. That\'s OK!' : P.likes.indexOf(x) > -1 ? ' And I know you like it too!' : '';
+      if (yesNo) return withQ('Yes, I like ' + x + '!' + yesNo, '我喜欢！', null);
+      return only('Yes, I like ' + x + '! Do you like ' + x + ' too?', '我喜欢！你也喜欢吗？', ['Yes, I do!', "No, I don't."], 'likeBack');
+    }
+    if ((m = t.match(/can you (\w+)/))) {
+      var can = { sing: 'I can sing a little! Say "Sing a song" and I will sing for you.', dance: "I can't dance, I have no legs! But I can cheer for you.", swim: "No, I can't swim. I'm the sun, water is scary!", fly: 'Yes! I am high up in the sky every day.', speak: 'I can speak English! And I understand a little Chinese.', help: 'Of course! Ask me a question, or say "What can you do?"', spell: 'Yes! Say "How do you spell apple?"', count: 'Yes! One, two, three, four, five... Ask me a math question!' }[m[1]];
+      return withQ(can || "Hmm, I'm not sure I can " + m[1] + '. Can you ' + m[1] + '?', '这个我不太确定。你会吗？', null);
+    }
+    if (/i love you|you('re| are) (nice|cool|great|the best|funny|smart|kind)/.test(t)) return withQ('Aww, thank you' + nm + '! You are a great English learner!', '谢谢你！你是很棒的英语学习者！', null);
+    if (/\b(thank|thanks)\b/.test(t)) return withQ("You're welcome" + nm + '!', '不客气！', null);
+    if (/\b(bye|goodbye|see you|good night)\b/.test(t)) { conv.lastQ = null; return { en: 'Goodbye' + nm + '! See you next time. Keep speaking English!' + (has('pet') && P.pet !== 'none' ? ' Say hi to ' + (P.petName || 'your ' + P.pet) + '!' : ''), zh: '再见！下次见，继续说英语哦！' }; }
+    if (/^because\b/.test(t)) return withQ(pick(['That is a great reason!', 'Good reason!', 'I see. That makes sense!']), '好理由！', null);
+    if (/^(sorry|pardon|what|again|repeat|say again|i don't understand|i dont understand)$/.test(t)) { if (Q[conv.lastQ]) return only('No problem! ' + Q[conv.lastQ].en, '没关系！' + Q[conv.lastQ].zh, Q[conv.lastQ].sug, conv.lastQ); return only('No problem! You can say anything, or ask me "What can you do?"', '没关系！可以说任何话，或者问我“What can you do?”', ['What can you do?'], null); }
+    if (/^(i don't know|i dont know|idk|no idea|i'm not sure|not sure)$/.test(t)) { if (Q[conv.lastQ]) return only("That's OK! You can say: \"" + Q[conv.lastQ].sug[0] + '"', '没关系！你可以说："' + Q[conv.lastQ].sug[0] + '"', Q[conv.lastQ].sug, conv.lastQ); return withQ("That's OK!", '没关系！', null); }
+    if ((m = t.match(/i (?:went|go|am going|will go) to (?:the )?([a-z ]+)/))) { conv.lastQ = 'fun'; return { en: 'You went to the ' + m[1].replace(/ (yesterday|today|last \w+)$/, '') + '? Did you have fun?', zh: '你去了那里？玩得开心吗？', sug: ['Yes, it was fun!', 'No, it was boring.'] }; }
+    if ((m = t.match(/\bi can (\w+(?: \w+)?)/)) && !/can't|cannot/.test(t)) return withQ('Wow, you can ' + m[1] + '! That is cool. Can you teach me?', '哇，你会！真酷！', null);
+    if (/\b(i'm|i am|i feel)\b.*\b(sad|tired|not good|bad|scared|angry|lonely|upset|worried|sick)\b/.test(t)) return only("Oh, I'm sorry you feel that way" + nm + ". It's OK. You can talk to your family or teacher, too. Do you want to hear a joke?", '抱歉你有这样的感觉。没关系，也可以和家人或老师聊聊。想听个笑话吗？', ['Yes, please!', 'No, thanks.'], 'joke');
+    if (/\b(i'm|i am|i feel)\b.*\b(happy|fine|good|great|excited|ok|okay)\b/.test(t)) { conv.asked.feeling = 1; return withQ('Yay! I am happy too' + nm + '!', '太好了！我也很开心！', null); }
+    if (/\b(hungry)\b/.test(t)) return withQ('Me too! What would you like to eat? Maybe some ' + (P.food || 'noodles') + '?', '我也是！想吃什么？', null);
+    return null;
+  }
+
+  // ---- topic words, with memory ----
+  function topicReply(t) {
+    var m;
+    if ((m = t.match(R(/@FOOD/)))) { var f = m[1]; return withQ(has('food') && P.food !== f ? cap(f) + '? Yummy! But I remember your favorite food is ' + P.food + '.' : cap(f) + '? Yummy! I like ' + f + ' too.', '好吃！', 'breakfast'); }
+    if ((m = t.match(R(/@ANIMAL/)))) { var a = singular(m[1]); return withQ(has('pet') && P.pet === a ? 'Just like your pet' + (P.petName ? ', ' + P.petName : '') + '!' : cap(plural(a)) + ' are so cute!', '好可爱！', 'pet'); }
+    if ((m = t.match(R(/@SPORT/)))) return withQ(cap(m[1]) + ' is so much fun!', '太好玩了！', 'weekend');
+    if ((m = t.match(R(/@SUBJECT/)))) return withQ(cap(m[1]) + ' is a great subject!', '这门课很棒！', 'subject');
+    if ((m = t.match(R(/@WEATHER/)))) return withQ(cap(m[1]) + ' today? Thanks for the weather report!', '谢谢你的天气预报！', 'season');
+    if ((m = t.match(R(/@SEASON/)))) return withQ(cap(m[1]) + ' is lovely!', '这个季节真好！', 'season');
+    if ((m = t.match(R(/@COLOR/)))) return withQ(cap(m[1]) + ' is a beautiful color!', '真漂亮的颜色！', 'color');
+    if ((m = t.match(R(/@FAMILY/))) && m[1] !== 'me') return withQ('Your ' + m[1] + ' sounds nice!', '听起来很好！', 'sibling');
+    return null;
+  }
+
+  function brain(raw, spellNote) {
+    var t = norm(raw).trim(); conv.turn++;
+    var snap = { pet: P.pet, food: P.food, animal: P.animal, dream: P.dream, likes: P.likes[0] || '' };
+    conv.factTurn = conv.factTurn || {};
+    var r = null;
+    if (conv.game) r = gameTurn(t);
+    var isQ = /\?\s*$/.test(raw) || /^(what|who|where|when|why|how|do|does|did|can|could|are|is|will|would|tell|let's|lets|sing|play|spell)\b/.test(t);
+    if (/\b(bye|goodbye|see you|good night)\b/.test(t) || /^(thank|thanks)\b/.test(t)) r = r || intents(t, raw);
+    if (!r && !isQ) r = answerLast(t);
+    if (!r) r = intents(t, raw);
+    if (!r && !isQ) r = learnStatements(t);
+    if (!r) r = topicReply(t);
+    if (!r) {
+      if (!P.name && /^[a-z]{2,12}$/.test(t) && !KNOWN[t] && !STOP_NAME.test(t)) { P.name = cap(t); rememberSave(); r = withQ('Are you ' + P.name + '? Nice to meet you, ' + P.name + '!', '很高兴认识你！', conv.lastQ && Q[conv.lastQ] ? null : 'feeling'); if (Q[conv.lastQ]) { r.en += ' ' + Q[conv.lastQ].en; r.zh += ' ' + Q[conv.lastQ].zh; r.sug = Q[conv.lastQ].sug; } }
+      else if (/^(yes|no|yeah|nope|ok|okay|yep|sure)$/.test(t)) r = Q[conv.lastQ] ? only('OK! ' + Q[conv.lastQ].en + ' You can say: "' + Q[conv.lastQ].sug[0] + '"', '好的！' + Q[conv.lastQ].zh, Q[conv.lastQ].sug, conv.lastQ) : withQ('OK!', '好的！', null);
+      else if (conv.lastQ && Q[conv.lastQ] && conv.qTries < 1) { conv.qTries++; r = only("Hmm, I'm not sure I understand. " + Q[conv.lastQ].en + ' You can say: "' + Q[conv.lastQ].sug[0] + '"', '我不太明白。' + Q[conv.lastQ].zh, Q[conv.lastQ].sug, conv.lastQ); }
+      else if (t.split(' ').length === 1 && !KNOWN[t]) r = only('Good word! Can you make a sentence with it? Try: "I like ' + t + '."', '很好的单词！能用它说一句话吗？', ['I like ' + t + '.'], conv.lastQ);
+      else r = withQ(pick(['Interesting! Tell me more.', 'Oh, really? That is cool!', 'I see! Thank you for telling me.']), '有意思！', null);
+    }
+    return r;
+  }
+  function memoryFacts() {
+    var f = [];
+    if (has('name')) f.push(['名字 Name', P.name, 'Your name is ' + P.name + '.']);
+    if (has('age')) f.push(['年龄 Age', P.age, 'You are ' + P.age + ' years old.']);
+    if (has('from')) f.push(['来自 From', title(P.from), 'You are from ' + title(P.from) + '.']);
+    if (has('pet') && P.pet !== 'none') f.push(['宠物 Pet', P.pet + (P.petName ? ' (' + P.petName + ')' : ''), 'You have ' + aan(P.pet) + ' ' + P.pet + (P.petName ? ' called ' + P.petName : '') + '.']);
+    if (has('sibling') && P.sibling !== 'none') f.push(['家人 Family', 'a ' + P.sibling, 'You have a ' + P.sibling + '.']);
+    ['food', 'animal', 'color', 'sport', 'subject', 'season'].forEach(function (k) { if (has(k)) f.push([SLOT_LABEL[k], P[k], 'Your ' + SLOT_LABEL[k] + ' is ' + P[k] + '.']); });
+    if (P.likes.length) f.push(['喜欢 Likes', P.likes.slice(0, 4).join(', '), 'You like ' + P.likes.slice(0, 3).join(', ') + '.']);
+    if (has('dream')) f.push(['梦想 Dream', P.dream, 'You want to be ' + aan(P.dream) + ' ' + P.dream + '.']);
+    if (P.wins) f.push(['猜谜 Wins', String(P.wins), 'You won ' + P.wins + ' guessing game' + (P.wins > 1 ? 's' : '') + '.']);
+    return f;
+  }
+  function renderMemory() {
+    ['mem', 'p-mem'].forEach(function (id) {
+      var ul = document.getElementById(id); if (!ul) return; ul.textContent = '';
+      var f = memoryFacts();
+      if (!f.length) { ul.appendChild(el('li', 'empty', 'Nothing yet. Tell Miss Sunny about you! 还没有记录，和 Sunny 老师聊聊你自己吧！')); return; }
+      f.forEach(function (x) { var li = el('li'); li.appendChild(el('small', '', x[0])); li.appendChild(el('b', '', x[1])); ul.appendChild(li); });
+    });
+  }
+  function forgetMe() { for (var k in P) delete P[k]; P.likes = []; P.dislikes = []; conv = { lastQ: null, asked: {}, game: null, turn: 0, aboutX: null, lastCb: 0, usedCb: {}, played: {}, qTries: 0 }; rememberSave(); }
+  function openingLine() {
+    conv.asked = {}; conv.lastQ = null; conv.game = null;
+    if (P.name) return withQ(pick(['Hi, ' + P.name + '! Nice to see you again.', 'Welcome back, ' + P.name + '!']), '欢迎回来！', null);
+    conv.asked.name = 1; conv.lastQ = 'name';
+    return { en: "Hi! I'm Miss Sunny. Let's chat! You can say anything, or ask me a question. First, what's your name?", zh: '嗨！我是 Sunny 老师。我们聊天吧！说什么都可以，也可以问我问题。先告诉我，你叫什么名字？', sug: Q.name.sug };
+  }
+
+
+  /* ================= speech ================= */
+  var canSpeak = 'speechSynthesis' in window;
+  var rate = 0.9, voice = null;
+  function pickVoice() {
+    if (!canSpeak) return;
+    try {
+      var vs = window.speechSynthesis.getVoices().filter(function (v) { return /^en(-|_)/i.test(v.lang); });
+      voice = vs.filter(function (v) { return /samantha|female|zira|aria|jenny|google us english/i.test(v.name); })[0] || vs.filter(function (v) { return /en(-|_)us/i.test(v.lang); })[0] || vs[0] || null;
+    } catch (e) {}
+  }
+  if (canSpeak) { pickVoice(); try { window.speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
+  function speak(text, slow) {
+    if (!canSpeak || !text) return;
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text.replace(/\.\.\.|…/g, ', '));
+      u.lang = 'en-US'; u.rate = slow ? 0.65 : rate; if (voice) u.voice = voice;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var activeRec = null;
+  // listen(btn, onInterim, onFinal, onMsg)
+  function listen(btn, onInterim, onFinal, onMsg) {
+    if (activeRec) { try { activeRec.stop(); } catch (e) {} return; }
+    var heard = '';
+    function off() { btn.classList.remove('on'); activeRec = null; }
+    try {
+      if (canSpeak) window.speechSynthesis.cancel();
+      var rec = new SR();
+      rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+      rec.onresult = function (e) { var txt = ''; for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript; heard = txt; if (onInterim) onInterim(txt); };
+      rec.onerror = function (e) {
+        off();
+        onMsg((e.error === 'not-allowed' || e.error === 'service-not-allowed') ? 'Microphone is not available here. You can type instead. 这里用不了麦克风，可以打字哦。'
+          : (e.error === 'no-speech' ? "I didn't hear you. Try again! 没听到，再说一次吧！" : 'Voice input stopped. You can type instead. 语音中断了，可以打字哦。'));
+      };
+      rec.onend = function () { off(); if (heard.trim()) { onMsg(''); onFinal(heard.trim()); } };
+      rec.start(); activeRec = rec; btn.classList.add('on');
+      onMsg('Listening… speak in English! 请说英语…');
+    } catch (err) { off(); onMsg('Voice input is not available here. You can type instead. 这里用不了语音，可以打字哦。'); }
+  }
+
+  /* ================= navigation & settings ================= */
+  var pages = ['home', 'talk', 'words', 'progress'];
+  function go(p) {
+    pages.forEach(function (x) { $('page-' + x).hidden = x !== p; });
+    Array.prototype.forEach.call(document.querySelectorAll('.nav button'), function (b) { if (b.getAttribute('data-page') === p) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    if (p === 'home') renderHome();
+    if (p === 'progress') renderProgress();
+    if (p === 'words') renderCard();
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-page],[data-go],[data-start]');
+    if (!b) return;
+    if (b.hasAttribute('data-page')) go(b.getAttribute('data-page'));
+    else if (b.hasAttribute('data-go')) go(b.getAttribute('data-go'));
+    else { go('talk'); openScene(b.getAttribute('data-start')); }
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-zh]'), function (b) {
+    b.addEventListener('click', function () {
+      var on = b.getAttribute('data-zh') === '1';
+      document.body.classList.toggle('no-zh', !on);
+      document.querySelectorAll('[data-zh]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-rate]'), function (b) {
+    b.addEventListener('click', function () {
+      rate = parseFloat(b.getAttribute('data-rate'));
+      document.querySelectorAll('[data-rate]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      speak('This is my voice speed.');
+    });
+  });
+  function starStr(n) { var s = ''; for (var i = 0; i < 3; i++) s += i < n ? '★' : '☆'; return s; }
+  function starsEl(n) { var sp = el('span', 'stars'); for (var i = 0; i < 3; i++) { var x = el('span', i < n ? '' : 'off', '★'); sp.appendChild(x); } sp.setAttribute('aria-label', n + ' of 3 stars'); return sp; }
+
+  /* ================= home ================= */
+  function renderHome() {
+    $('hero-h1').textContent = P.name ? 'Hi, ' + P.name + "! I'm Miss Sunny." : "Hi! I'm Miss Sunny.";
+    var tiles = $('home-tiles'); tiles.textContent = '';
+    var done = 0;
+    SCENES.forEach(function (s) {
+      var st = store.stars[s.id] || 0; if (st) done++;
+      var b = el('button', 'tile'); b.type = 'button'; b.setAttribute('data-start', s.id);
+      b.appendChild(el('span', 'emo', s.emo)); b.appendChild(el('b', '', s.en)); b.appendChild(el('small', 'zh', s.zh)); b.appendChild(starsEl(st));
+      tiles.appendChild(b);
+    });
+    var fc = el('button', 'tile'); fc.type = 'button'; fc.setAttribute('data-start', 'free');
+    fc.appendChild(el('span', 'emo', '💬')); fc.appendChild(el('b', '', 'Free chat')); fc.appendChild(el('small', 'zh', '自由聊天：问 Sunny 老师任何问题')); tiles.appendChild(fc);
+    $('home-count').textContent = done + ' of ' + SCENES.length + ' scenes done';
+    var w = ALLWORDS[Math.floor(Date.now() / 86400000) % ALLWORDS.length];
+    var wod = $('wod'); wod.textContent = '';
+    wod.appendChild(el('span', 'emo', w.emo));
+    var d = el('div'); d.appendChild(el('p', 'eyebrow', "Today's word 今日单词")); d.appendChild(el('b', '', w.en));
+    d.appendChild(el('p', '', w.ex)); var z = el('p', 'zh', w.zh); d.appendChild(z);
+    var lb = el('button', 'btn small', '▶ Listen'); lb.type = 'button'; lb.addEventListener('click', function () { speak(w.en + '. ' + w.ex); }); d.appendChild(lb);
+    wod.appendChild(d);
+    var ms = $('mini-stats'); ms.textContent = '';
+    [[totalStars(), 'stars 星星'], [Object.keys(store.known).length, 'words 单词'], [store.said, 'sentences 句子']].forEach(function (x) { var c = el('div'); c.appendChild(el('b', '', String(x[0]))); c.appendChild(el('small', '', x[1])); ms.appendChild(c); });
+  }
+  function totalStars() { var t = 0; for (var k in store.stars) t += store.stars[k]; return t; }
+
+  /* ================= talk ================= */
+  var cur = null, mode = 'scene', ti = 0, tries = 0, okCount = 0, runFix = [], runGood = [];
+  var chat = $('chat'), input = $('say-in'), status = $('status');
+  function renderSceneRow() {
+    var row = $('scene-row'); row.textContent = '';
+    SCENES.forEach(function (s) {
+      var b = el('button', 'chip', s.emo + ' ' + s.en); b.type = 'button'; b.setAttribute('aria-pressed', String(mode === 'scene' && cur === s));
+      b.addEventListener('click', function () { openScene(s.id); }); row.appendChild(b);
+    });
+    var f = el('button', 'chip', '💬 Free chat'); f.type = 'button'; f.setAttribute('aria-pressed', String(mode === 'free'));
+    f.addEventListener('click', function () { openScene('free'); }); row.appendChild(f);
+  }
+  function setStep(step) {
+    ['learn', 'practice', 'review'].forEach(function (x) { $('step-' + x).hidden = x !== step; });
+    document.querySelectorAll('#step-tabs button').forEach(function (b) { b.setAttribute('aria-selected', String(b.getAttribute('data-step') === step)); });
+  }
+  document.querySelectorAll('#step-tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var s = b.getAttribute('data-step');
+      if (s === 'practice') startPractice(); else if (s === 'review') { renderReview(); setStep('review'); } else setStep('learn');
+    });
+  });
+  $('to-practice').addEventListener('click', startPractice);
+
+  function openScene(id) {
+    if (activeRec) { try { activeRec.stop(); } catch (e) {} }
+    if (id === 'free') {
+      mode = 'free'; cur = null;
+      $('sc-emo').textContent = '💬'; $('sc-title').textContent = 'Free chat';
+      $('sc-sub').textContent = 'Say anything! Ask Miss Sunny questions, too. 想说什么都可以，也可以问 Sunny 老师问题。';
+      $('step-tabs').hidden = true; setStep('practice');
+      $('turn-card').hidden = true; $('supports').parentNode.hidden = true; $('mem-card').hidden = false;
+      $('useful-title').firstChild.textContent = 'Try saying… ';
+      fillUseful(["What can you do?", "Let's play a guessing game!", "Tell me a story.", "Tell me a riddle.", "How do you spell elephant?", "What is 熊猫 in English?", "What is 7 plus 5?", "I have a dog named Max.", "What's my name?", "What do you remember about me?"]);
+      chat.textContent = '';
+      var op = openingLine(); sunnySays(op.en, op.zh); showQuick(op.sug); renderMemory();
+      renderSceneRow(); return;
+    }
+    mode = 'scene'; cur = SCENE_BY[id] || SCENES[0];
+    $('step-tabs').hidden = false; $('turn-card').hidden = false; $('supports').parentNode.hidden = false; $('mem-card').hidden = true; showQuick(null);
+    $('useful-title').firstChild.textContent = 'Useful sentences ';
+    $('sc-emo').textContent = cur.emo; $('sc-title').textContent = cur.en;
+    $('sc-sub').textContent = cur.zh + ' · 5 sentences · 5 questions';
+    renderPhrases(); fillUseful(cur.learn.map(function (l) { return l; }));
+    setStep('learn'); renderSceneRow();
+  }
+
+  function renderPhrases() {
+    var box = $('phrases'); box.textContent = '';
+    cur.learn.forEach(function (l) {
+      var row = el('div', 'phrase');
+      var tx = el('div'); tx.appendChild(el('div', 'en', l[0])); tx.appendChild(el('div', 'zh', l[1])); row.appendChild(tx);
+      var acts = el('div', 'acts');
+      var lb = el('button', 'iconbtn', '▶'); lb.type = 'button'; lb.setAttribute('aria-label', 'Listen'); lb.addEventListener('click', function () { speak(l[0]); }); acts.appendChild(lb);
+      var res = el('div', 'res');
+      if (SR) {
+        var mb = el('button', 'micbtn'); mb.type = 'button'; mb.setAttribute('aria-label', 'Say it after me');
+        mb.innerHTML = '<svg aria-hidden="true"><use href="#mic"/></svg>';
+        mb.addEventListener('click', function () {
+          listen(mb, function (t) { res.className = 'res try'; res.textContent = 'I hear: ' + t; }, function (t) {
+            var sc = matchScore(l[0], t);
+            res.className = 'res' + (sc >= 0.5 ? '' : ' try');
+            res.textContent = (sc >= 0.8 ? '🌟 Perfect! 完美！' : sc >= 0.5 ? '👍 Good! Try once more. 不错，再试一次！' : '👂 Listen again and try. 再听一遍试试。') + '  I heard: "' + t + '"';
+            if (sc >= 0.8) store.said++, save();
+          }, function (msg) { if (msg) { res.className = 'res try'; res.textContent = msg; } });
+        });
+        acts.appendChild(mb);
+      }
+      row.appendChild(acts); row.appendChild(res); box.appendChild(row);
+    });
+    $('learn-tip').firstChild.textContent = SR ? 'Tap ▶ to listen. Tap the mic to say it after me.' : 'Tap ▶ to listen, then say it out loud.';
+  }
+  function matchScore(target, heard) {
+    var a = norm(target).trim().split(' '), b = norm(heard).trim().split(' '), hit = 0;
+    a.forEach(function (w) { var i = b.indexOf(w); if (i > -1) { hit++; b.splice(i, 1); } });
+    return a.length ? hit / a.length : 0;
+  }
+  function fillUseful(list) {
+    var ul = $('useful'); ul.textContent = '';
+    list.forEach(function (l) {
+      var en = typeof l === 'string' ? l : l[0], zh = typeof l === 'string' ? '' : l[1];
+      var li = el('li'), b = el('button'); b.type = 'button';
+      b.appendChild(document.createTextNode(en)); if (zh) b.appendChild(el('small', 'zh', zh));
+      b.addEventListener('click', function () { speak(en); if (mode === 'free') { input.value = en; input.focus(); } });
+      li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  function bubble(who, en, zh, opts) {
+    opts = opts || {};
+    var row = el('div', 'msg ' + who);
+    row.appendChild(el('div', 'av', who === 'sunny' ? 'MS' : 'Me'));
+    var b = el('div', 'bubble');
+    var p = el('p');
+    if (opts.praise) { p.appendChild(el('span', 'praise', opts.praise + ' ')); }
+    p.appendChild(document.createTextNode(en)); b.appendChild(p);
+    if (zh) b.appendChild(el('div', 'zh', zh));
+    if (opts.spell && opts.spell.length) b.appendChild(el('div', 'spell', '🔤 Spelling: ' + opts.spell.map(function (f) { return f[0] + ' → ' + f[1]; }).join(', ')));
+    if (opts.fix) b.appendChild(el('div', 'fix', '✨ Better: ' + opts.fix));
+    if (who === 'sunny' && canSpeak) {
+      var btn = el('button', 'say', '▶ Listen'); btn.type = 'button';
+      var spoken = (opts.praise ? opts.praise + ' ' : '') + en;
+      btn.addEventListener('click', function () { speak(spoken); }); b.appendChild(btn);
+    }
+    if (who === 'kid' && opts.fix && canSpeak) {
+      var fb = el('button', 'say', '▶ Hear the better way'); fb.type = 'button';
+      fb.addEventListener('click', function () { speak(opts.fix); }); b.appendChild(fb);
+    }
+    row.appendChild(b); chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+  }
+  function showQuick(list) {
+    var q = $('quick'); q.textContent = '';
+    if (mode !== 'free' || !list || !list.length) { q.hidden = true; return; }
+    q.hidden = false;
+    list.slice(0, 3).forEach(function (txt) { var b = el('button', '', txt); b.type = 'button'; b.addEventListener('click', function () { handle(txt); }); q.appendChild(b); });
+  }
+  function sunnySays(en, zh, opts) { bubble('sunny', en, zh, opts); speak(((opts && opts.praise) ? opts.praise + ' ' : '') + en); }
+
+  function startPractice() {
+    if (mode !== 'scene' || !cur) return;
+    ti = 0; tries = 0; okCount = 0; runFix = []; runGood = [];
+    chat.textContent = ''; setStep('practice');
+    var q = cur.turns[0];
+    sunnySays(cur.hello + ' ' + q[0], q[1]);
+    renderTurn(); input.value = ''; input.focus();
+  }
+  function renderTurn() {
+    var n = cur.turns.length, dots = $('dots'); dots.textContent = '';
+    for (var i = 0; i < n; i++) dots.appendChild(el('i', i < ti ? 'done' : (i === ti ? 'now' : '')));
+    if (ti >= n) { $('turn-title').textContent = 'All done! 完成啦！'; $('turn-zh').textContent = ''; return; }
+    $('turn-title').textContent = 'Question ' + (ti + 1) + ' of ' + n;
+    $('turn-zh').textContent = cur.turns[ti][0];
+  }
+  function fill(tpl, m) {
+    return tpl.replace(/\$(C|T)?(\d)/g, function (_, f, i) {
+      var v = (m[+i] || '').trim().replace(/\s+(and you|please|thank you|thanks)$/, '');
+      return f === 'C' ? cap(v) : f === 'T' ? title(v) : v;
+    });
+  }
+  function evaluate(turn, raw) {
+    var t = norm(raw).trim();
+    for (var i = 0; i < turn[4].length; i++) {
+      var p = turn[4][i], re = R(p[0]), m = t.match(re);
+      if (m) return { ok: true, say: fill(p[1], m), fix: p[2] ? fill(p[2], m) : null };
+    }
+    return { ok: false };
+  }
+  function hasZh(s) { return /[一-鿿]/.test(s); }
+  function zhHint(s) { for (var i = 0; i < ZH_HINT.length; i++) if (ZH_HINT[i][0].test(s)) return ZH_HINT[i][1]; return null; }
+
+  function handle(raw) {
+    var text = raw.trim(); if (!text) return;
+    if (activeRec) { try { activeRec.stop(); } catch (e) {} }
+    if (hasZh(text)) {
+      bubble('kid', text, '');
+      var tr = mode === 'free' ? translateZh(text) : null;
+      if (tr) { sunnySays(tr.en, tr.zh); showQuick(tr.sug); return; }
+      var h = zhHint(text);
+      var turn = mode === 'scene' && cur && ti < cur.turns.length ? cur.turns[ti] : null;
+      var tryLine = h || (turn ? turn[3] : 'I like ...');
+      sunnySays("Let's say it in English! Try: \"" + tryLine + '"', '我们用英语说吧！试试："' + tryLine + '"');
+      if (mode === 'free') showQuick([tryLine]);
+      return;
+    }
+    store.said++; save();
+    var sf = spellFix(text, mode === 'free' && (conv.lastQ === 'name' || conv.lastQ === 'petName'));
+    var said = sf.text;
+    var better = polish(said);
+    if (mode === 'free') {
+      var r = brain(better || said);
+      var fixLine = better || r.fix || null;
+      bubble('kid', text, '', { fix: fixLine, spell: sf.fixes });
+      if (fixLine) pushFix(text, fixLine); else if (!sf.fixes.length) pushGood(text);
+      sunnySays(r.en, r.zh);
+      showQuick(r.sug);
+      return;
+    }
+    learnStatements(norm(better || said).trim(), true);
+    if (!cur || ti >= cur.turns.length) {
+      bubble('kid', text, '', { fix: better });
+      sunnySays('This lesson is finished! Tap "3. Review" to see your stars, or pick another scene.', '这一课结束啦！点“3. Review”看星星，或者换一个场景。');
+      return;
+    }
+    var tn = cur.turns[ti], t = norm(text).trim();
+    if (/^(i don't know|i dont know|idk|no idea|help|i don't understand|i dont understand)$/.test(t)) {
+      bubble('kid', text, '');
+      sunnySays("That's OK! You can say: \"" + tn[3] + '" Now you try!', '没关系！你可以说："' + tn[3] + '" 现在你来试试！');
+      return;
+    }
+    if (/^(sorry|pardon|again|repeat|what|say again|one more time)$/.test(t)) {
+      bubble('kid', text, ''); bubble('sunny', tn[0], tn[1]); speak(tn[0], true); return;
+    }
+    var ev = evaluate(tn, better || said);
+    var fixLine = better || ev.fix || null;
+    if (ev.ok && ev.fix) learnStatements(norm(ev.fix).trim(), true);
+    bubble('kid', text, '', { fix: ev.ok ? fixLine : better, spell: sf.fixes });
+    if (ev.ok) {
+      okCount++;
+      if (fixLine) pushFix(text, fixLine); else pushGood(text);
+      ti++; tries = 0;
+      var pr = pick(PRAISE).slice();
+      if (P.name && Math.random() < 0.45) pr[0] = pr[0].replace(/!$/, ', ' + P.name + '!');
+      if (ti < cur.turns.length) {
+        var nq = cur.turns[ti];
+        sunnySays(ev.say + ' ' + nq[0], nq[1], { praise: pr[0] });
+      } else {
+        sunnySays(ev.say + ' ' + cur.bye, '这一课完成啦！点 Review 看看你的星星。', { praise: pr[0] });
+        finishScene();
+      }
+    } else {
+      tries++;
+      if (better) pushFix(text, better);
+      if (tries < 2) {
+        sunnySays('Good try! Here is one way to say it: "' + tn[3] + '" Now you try!', '不错的尝试！可以这样说："' + tn[3] + '" 你来试试！');
+      } else {
+        ti++; tries = 0;
+        if (ti < cur.turns.length) {
+          var nq2 = cur.turns[ti];
+          sunnySays("Let's keep going! Remember: \"" + tn[3] + '" Next question: ' + nq2[0], '我们继续！记住这句。下一题：' + nq2[1]);
+        } else {
+          sunnySays('Remember: "' + tn[3] + '" ' + cur.bye, '这一课完成啦！');
+          finishScene();
+        }
+      }
+    }
+    renderTurn();
+  }
+  function pushFix(said, better) { runFix.push([said, better]); store.fixes.unshift(better); store.fixes = store.fixes.slice(0, 20); save(); }
+  function pushGood(said) { runGood.push(said); store.best.unshift(said); store.best = store.best.filter(function (v, i, a) { return a.indexOf(v) === i; }).slice(0, 12); save(); }
+  function finishScene() {
+    var st = okCount >= 5 ? 3 : okCount >= 3 ? 2 : okCount >= 1 ? 1 : 0;
+    cur.lastStars = st;
+    if (st > (store.stars[cur.id] || 0)) store.stars[cur.id] = st;
+    save(); renderTurn();
+    var row = el('div', 'msg sunny'); row.appendChild(el('div'));
+    var b = el('button', 'btn small', 'See my stars ★ 看星星'); b.type = 'button'; b.style.justifySelf = 'start';
+    b.addEventListener('click', function () { renderReview(); setStep('review'); });
+    row.appendChild(b); chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+  }
+  function renderReview() {
+    var big = $('rev-big'); big.textContent = '';
+    if (!cur) return;
+    var st = cur.lastStars != null ? cur.lastStars : (store.stars[cur.id] || 0);
+    big.appendChild(el('span', 'emo', cur.emo)).style.fontSize = '44px';
+    big.appendChild(el('h2', '', cur.lastStars != null ? (st === 3 ? 'Amazing!' : st === 2 ? 'Great work!' : 'Good start!') : 'Your best so far'));
+    big.appendChild(starsEl(st));
+    big.appendChild(el('p', 'empty', cur.lastStars != null ? 'You answered ' + okCount + ' of ' + cur.turns.length + ' questions. 你答对了 ' + okCount + ' 题。' : 'Finish the practice to earn stars. 完成练习就能得星星。'));
+    var r = el('div', 'row');
+    var a = el('button', 'btn', 'Practice again 再练一次'); a.type = 'button'; a.addEventListener('click', startPractice); r.appendChild(a);
+    var idx = SCENES.indexOf(cur), nx = SCENES[(idx + 1) % SCENES.length];
+    var n = el('button', 'btn ghost', 'Next: ' + nx.emo + ' ' + nx.en); n.type = 'button'; n.addEventListener('click', function () { openScene(nx.id); }); r.appendChild(n);
+    big.appendChild(r);
+    var fx = $('rev-fix'); fx.textContent = '';
+    if (runFix.length) { var ul = el('ul'); runFix.forEach(function (f) { var li = el('li'); li.appendChild(el('s', '', f[0])); li.appendChild(document.createTextNode(' → ')); li.appendChild(el('b', '', f[1])); var sb = el('button', 'say', '▶'); sb.type = 'button'; sb.style.marginLeft = '6px'; sb.addEventListener('click', function () { speak(f[1]); }); li.appendChild(sb); ul.appendChild(li); }); fx.appendChild(ul); }
+    else fx.appendChild(el('p', 'empty', 'No corrections this time. 这次没有需要改的句子！'));
+    var gd = $('rev-good'); gd.textContent = '';
+    if (runGood.length) { var ul2 = el('ul'); runGood.forEach(function (g) { ul2.appendChild(el('li', '', g)); }); gd.appendChild(ul2); }
+    else gd.appendChild(el('p', 'empty', 'Your good sentences will show here. 你说得好的句子会显示在这里。'));
+  }
+
+  $('ask').addEventListener('submit', function (e) { e.preventDefault(); var v = input.value; input.value = ''; handle(v); input.focus(); });
+  $('supports').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-help]'); if (!b || !cur || ti >= cur.turns.length) return;
+    var tn = cur.turns[ti], h = b.getAttribute('data-help');
+    if (h === 'again') { bubble('sunny', tn[0], '', {}); speak(tn[0], true); }
+    else if (h === 'zh') bubble('sunny', tn[0], '中文意思：' + tn[1]);
+    else if (h === 'starter') { input.value = tn[2].indexOf('/') > -1 ? '' : tn[2]; bubble('sunny', 'Start like this: "' + (tn[2] || tn[3]) + '…"', '这样开头：'); input.focus(); }
+    else if (h === 'example') sunnySays('Here is an example: "' + tn[3] + '" Now say your own!', '示范：' + tn[3] + ' 现在说你自己的答案！');
+  });
+  var mic = $('mic');
+  if (SR) {
+    mic.hidden = false;
+    mic.addEventListener('click', function () {
+      listen(mic, function (t) { input.value = t; }, function (t) { input.value = ''; handle(t); }, function (m) { status.textContent = m; });
+    });
+  }
+
+  /* ================= word cards ================= */
+  var cat = 'animals', wi = 0, deck = [];
+  function renderCatRow() {
+    var row = $('cat-row'); row.textContent = '';
+    CATS.forEach(function (c) {
+      var n = c[2].filter(function (w) { return store.known[c[0] + ':' + w[1]]; }).length;
+      var b = el('button', 'chip', c[1] + ' · ' + n + '/' + c[2].length); b.type = 'button'; b.setAttribute('aria-pressed', String(c[0] === cat));
+      b.addEventListener('click', function () { cat = c[0]; wi = 0; renderCard(); startQuiz(); }); row.appendChild(b);
+    });
+  }
+  function renderCard() {
+    deck = ALLWORDS.filter(function (w) { return w.cat === cat; });
+    if (wi >= deck.length) wi = 0; if (wi < 0) wi = deck.length - 1;
+    var w = deck[wi];
+    $('flash').classList.remove('flipped');
+    $('f-emo').textContent = w.emo; $('f-w').textContent = w.en; $('f-zh').textContent = w.zh; $('f-ex').textContent = w.ex;
+    $('f-count').textContent = (wi + 1) + ' / ' + deck.length + (store.known[w.key] ? ' · ✓ known' : '');
+    $('f-status').textContent = '';
+    renderCatRow();
+  }
+  $('flash').addEventListener('click', function () { $('flash').classList.toggle('flipped'); if ($('flash').classList.contains('flipped')) speak(deck[wi].ex); });
+  $('f-prev').addEventListener('click', function () { wi--; renderCard(); });
+  $('f-say').addEventListener('click', function () { speak(deck[wi].en); });
+  $('f-know').addEventListener('click', function () { store.known[deck[wi].key] = 1; save(); wi++; renderCard(); });
+  $('f-learning').addEventListener('click', function () { delete store.known[deck[wi].key]; save(); wi++; renderCard(); });
+  if (SR) {
+    var fm = $('f-mic'); fm.hidden = false;
+    fm.addEventListener('click', function () {
+      listen(fm, null, function (t) {
+        var w = deck[wi], ok = norm(t).indexOf(' ' + w.en + ' ') > -1 || norm(t).indexOf(' ' + w.en.replace(/s$/, '') + ' ') > -1;
+        $('f-status').style.color = ok ? 'var(--fix)' : 'var(--warn)';
+        $('f-status').textContent = ok ? '🌟 Great! You said "' + w.en + '". 说对了！' : 'I heard "' + t + '". Listen and try again! 再听一遍试试。';
+      }, function (m) { $('f-status').style.color = 'var(--muted)'; $('f-status').textContent = m; });
+    });
+  }
+
+  var qz = { list: [], i: 0, score: 0 };
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function startQuiz() { qz = { list: shuffle(ALLWORDS.filter(function (w) { return w.cat === cat; })).slice(0, 5), i: 0, score: 0 }; renderQuiz(); }
+  function renderQuiz() {
+    var box = $('quiz'); box.textContent = '';
+    var head = el('div', 'sec-title'); head.appendChild(el('h2', '', 'Quick quiz')); head.appendChild(el('span', '', qz.i < qz.list.length ? (qz.i + 1) + ' / ' + qz.list.length : 'Done')); box.appendChild(head);
+    if (qz.i >= qz.list.length) {
+      box.appendChild(el('p', '', 'You got ' + qz.score + ' of ' + qz.list.length + ' right! ' + (qz.score === qz.list.length ? '🌟 Perfect!' : '👍 Keep going!')));
+      box.appendChild(el('p', 'zh', '答对 ' + qz.score + ' 题。'));
+      var again = el('button', 'btn', 'Try again 再来一次'); again.type = 'button'; again.addEventListener('click', startQuiz); box.appendChild(again);
+      return;
+    }
+    var w = qz.list[qz.i];
+    var q = el('div', 'q'); q.appendChild(el('span', 'emo', w.emo));
+    var qt = el('div'); qt.appendChild(el('p', 'empty', 'Which word is it? 选出正确的单词')); qt.appendChild(el('b', 'zh', w.zh)); q.appendChild(qt); box.appendChild(q);
+    var opts = el('div', 'opts');
+    var others = shuffle(ALLWORDS.filter(function (x) { return x.cat === w.cat && x.en !== w.en; })).slice(0, 3);
+    var fb = el('p', 'fb');
+    shuffle(others.concat([w])).forEach(function (o) {
+      var b = el('button', '', o.en); b.type = 'button';
+      b.addEventListener('click', function () {
+        if (opts.getAttribute('data-done')) return; opts.setAttribute('data-done', '1');
+        speak(w.en);
+        if (o === w) { b.className = 'right'; qz.score++; fb.style.color = 'var(--fix)'; fb.textContent = pick(PRAISE)[0] + ' "' + w.en + '" = ' + w.zh; }
+        else { b.className = 'wrong'; fb.style.color = 'var(--warn)'; fb.textContent = 'Oops! It\'s "' + w.en + '".'; opts.querySelectorAll('button').forEach(function (x) { if (x.textContent === w.en) x.className = 'right'; }); }
+        var nx = el('button', 'btn small', qz.i + 1 < qz.list.length ? 'Next →' : 'See score'); nx.type = 'button'; nx.style.marginTop = '10px';
+        nx.addEventListener('click', function () { qz.i++; renderQuiz(); }); box.appendChild(nx);
+      });
+      opts.appendChild(b);
+    });
+    box.appendChild(opts); box.appendChild(fb);
+  }
+
+  /* ================= progress ================= */
+  function renderProgress() {
+    var sr = $('stat-row'); sr.textContent = '';
+    var done = SCENES.filter(function (s) { return store.stars[s.id]; }).length;
+    [[totalStars() + ' / ' + SCENES.length * 3, 'Stars 星星'], [done + ' / ' + SCENES.length, 'Scenes done 完成场景'], [Object.keys(store.known).length + ' / ' + ALLWORDS.length, 'Words I know 会的单词'], [store.said, 'Sentences said 说过的句子']].forEach(function (x) {
+      var c = el('div', 'card'); c.appendChild(el('b', '', String(x[0]))); c.appendChild(el('small', '', x[1])); sr.appendChild(c);
+    });
+    var ul = $('p-scenes'); ul.textContent = '';
+    SCENES.forEach(function (s) {
+      var li = el('li'); var l = el('span', '', s.emo + ' ' + s.en + ' '); l.appendChild(el('small', 'zh', s.zh)); li.appendChild(l);
+      var r = el('span'); r.appendChild(starsEl(store.stars[s.id] || 0));
+      var b = el('button', 'btn ghost small', store.stars[s.id] ? 'Again' : 'Start'); b.type = 'button'; b.setAttribute('data-start', s.id); b.style.marginLeft = '8px'; r.appendChild(b);
+      li.appendChild(r); ul.appendChild(li);
+    });
+    var best = $('p-best'); best.textContent = '';
+    var list = store.best.slice(0, 6);
+    if (!list.length) best.appendChild(el('li', 'empty', 'Answer questions in Talk to collect your best sentences. 去对话练习收集好句子吧！'));
+    list.forEach(function (s) { best.appendChild(el('li', '', s)); });
+    if (store.fixes.length) { best.appendChild(el('li', 'empty', 'Better ways I learned 我学会的更好说法:')); store.fixes.slice(0, 4).forEach(function (f) { var li = el('li'); li.appendChild(el('b', '', '✨ ' + f)); best.appendChild(li); }); }
+    renderMemory();
+    var pw = $('p-words'); pw.textContent = '';
+    var known = ALLWORDS.filter(function (w) { return store.known[w.key]; });
+    if (!known.length) pw.appendChild(el('p', 'empty', 'Tap "I know it" on word cards. 在单词卡上点 “I know it”。'));
+    known.forEach(function (w) { pw.appendChild(el('span', '', w.emo + ' ' + w.en)); });
+  }
+  $('forget').addEventListener('click', function () { forgetMe(); chat.textContent = ''; var op = openingLine(); sunnySays(op.en, op.zh); showQuick(op.sug); });
+  var resetArmed = false;
+  $('reset').addEventListener('click', function () {
+    var b = $('reset');
+    if (!resetArmed) { resetArmed = true; b.textContent = 'Tap again to clear 再点一次确认'; setTimeout(function () { resetArmed = false; b.textContent = 'Start over 清空记录'; }, 3000); return; }
+    forgetMe(); store = { stars: {}, known: {}, said: 0, best: [], fixes: [], profile: P }; save(); renderMemory(); resetArmed = false; b.textContent = 'Start over 清空记录'; renderProgress();
+  });
+
+  // expose for testing
+  window.__sunny = { polish: polish, freeReply: freeReply, evaluate: evaluate, SCENES: SCENES, brain: brain, spellFix: spellFix, P: function () { return P; }, conv: function () { return conv; }, forget: forgetMe, translateZh: translateZh };
+
+  renderSceneRow(); openScene('meet'); renderCard(); startQuiz(); go('home');
+})();
+</script>
+</body>
+</html>
